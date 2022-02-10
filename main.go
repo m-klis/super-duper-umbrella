@@ -2,18 +2,20 @@ package main
 
 import (
 	"context"
-	"example/bucketeer/db"
-	"example/bucketeer/handler"
 	"fmt"
+	"gochicoba/db"
+	"gochicoba/handler"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/joho/godotenv"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -24,38 +26,44 @@ func init() {
 }
 
 func main() {
-	//fmt.Println(os.Getenv("POSTGRES_HOST"))
-	addr := ":8080"
-	listener, err := net.Listen("tcp", addr)
-	if err != nil {
-		log.Fatalf("Error occured: %s", err.Error())
-	}
-	dbHost, dbPort, dbUser, dbPassword, dbName :=
-		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("POSTGRES_PORT"),
-		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PASSWORD"),
-		os.Getenv("POSTGRES_DB")
-	database, err := db.Initialize(dbHost, dbPort, dbUser, dbPassword, dbName)
-	if err != nil {
-		log.Fatalf("Could not set up database: %v", err)
-	}
-
-	httpHandler := handler.NewHandler(database)
+	database := db.DatabaseInitialize()
+	addr := os.Getenv("APP_PORT")
 	server := &http.Server{
-		Handler: httpHandler,
+		Addr:    fmt.Sprintf(":%s", addr),
+		Handler: InitializeRoute(database),
 	}
 
 	go func() {
-		server.Serve(listener)
+		server.ListenAndServe()
 	}()
 
 	defer Stop(server)
-	log.Printf("Started server on %s", addr)
+	log.Printf("Started server on : %s", addr)
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	log.Println(fmt.Sprint(<-ch), "in server")
 	log.Println("Stopping API Server")
+}
+
+func InitializeRoute(db *gorm.DB) http.Handler {
+	router := chi.NewRouter()
+	router.Use(middleware.Logger)
+	router.MethodNotAllowed(handler.MethodNotAllowedHandler)
+	router.NotFound(handler.NotFoundHandler)
+
+	ih := ItemHandler(db)
+	router.Route("/items", func(router chi.Router) {
+		router.Get("/", ih.GetAllItems)
+		// router.Post("/", createItem)
+		router.Route("/{itemID}", func(router chi.Router) {
+			// 	router.Use(ItemContext)
+			router.Get("/", ih.GetItem)
+			// 	router.Put("/", updateItem)
+			// 	router.Delete("/", deleteItem)
+		})
+	})
+
+	return router
 }
 
 func Stop(server *http.Server) {

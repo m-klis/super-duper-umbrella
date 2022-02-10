@@ -1,32 +1,14 @@
 package handler
 
 import (
-	"example/bucketeer/db"
+	"gochicoba/helpers"
 	"net/http"
-
-	"github.com/go-chi/chi"
-	"github.com/go-chi/render"
 )
 
-var dbInstance db.Database
-
-func NewHandler(db db.Database) http.Handler {
-	router := chi.NewRouter()
-	dbInstance = db
-	router.MethodNotAllowed(methodNotAllowedHandler)
-	router.NotFound(notFoundHandler)
-	router.Route("/items", items)
-	return router
+func MethodNotAllowedHandler(w http.ResponseWriter, r *http.Request) {
+	helpers.ErrorResponse(w, r, http.StatusMethodNotAllowed, "failed", nil)
 }
 
-func methodNotAllowedHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(405)
-	render.Render(w, r, ErrMethodNotAllowed)
-}
-
-func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(400)
-	render.Render(w, r, ErrNotFound)
+func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+	helpers.ErrorResponse(w, r, http.StatusNotFound, "failed", nil)
 }

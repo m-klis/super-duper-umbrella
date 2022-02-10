@@ -1,11 +1,13 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 // const (
@@ -16,23 +18,30 @@ import (
 
 var ErrNoMatch = fmt.Errorf("no matching record")
 
-type Database struct {
-	Conn *sql.DB
-}
+var dB *gorm.DB
 
-func Initialize(host, port, username, password, database string) (Database, error) {
-	db := Database{}
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		host, port, username, password, database)
-	conn, err := sql.Open("postgres", dsn)
+func DatabaseInitialize() *gorm.DB {
+	var err error
+
+	host := os.Getenv("POSTGRES_HOST")
+	port := os.Getenv("POSTGRES_PORT")
+	dbName := os.Getenv("POSTGRES_DB")
+	username := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	// Initialize DB
+	db, err := gorm.Open(postgres.Open(
+		fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
+			host, port, dbName, username, password),
+	), &gorm.Config{
+		// Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
-		return db, err
+		log.Fatalf("[INIT] Failed connecting to PostgreSQL Database at %s:%s. %+v\n",
+			host, port, err)
 	}
-	db.Conn = conn
-	err = db.Conn.Ping()
-	if err != nil {
-		return db, err
-	}
-	log.Println("Database connection established")
-	return db, nil
+	log.Printf("[INIT] Successfully connected to PostgreSQL Database\n")
+	sqlDb, err := db.DB()
+	sqlDb.SetMaxOpenConns(100)
+	dB = db
+	return dB
 }
