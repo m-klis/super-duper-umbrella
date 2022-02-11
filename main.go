@@ -54,12 +54,12 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 	ih := ItemHandler(db)
 	router.Route("/items", func(router chi.Router) {
 		router.Get("/", ih.GetAllItems)
-		// router.Post("/", createItem)
+		router.Post("/", ih.CreateItem)
 		router.Route("/{itemID}", func(router chi.Router) {
 			// 	router.Use(ItemContext)
 			router.Get("/", ih.GetItem)
-			// 	router.Put("/", updateItem)
-			// 	router.Delete("/", deleteItem)
+			router.Put("/", ih.UpdateItem)
+			router.Delete("/", ih.DeleteItem)
 		})
 	})
 

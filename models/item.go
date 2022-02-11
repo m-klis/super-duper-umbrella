@@ -3,14 +3,22 @@ package models
 import (
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type Item struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	CreatedAt   string `json:"created_at"`
+	ID          int       `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
 }
+
+// type ItemRequest struct {
+// 	ID          int    `json:"id"`
+// 	Name        string `json:"name"`
+// 	Description string `json:"description"`
+// 	CreatedAt   string `json:"created_at"`
+// }
 
 func (i *Item) Bind(r *http.Request) error {
 	if i.Name == "" {

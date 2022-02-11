@@ -8,10 +8,10 @@ import (
 type ItemService interface {
 	GetAllItems() ([]*models.Item, error)
 	GetItem(id int) (*models.Item, error)
-	// AddItem(item *models.Item) error
+	AddItem(item *models.Item) (id int, err error)
 	// GetItemById(itemId int) (models.Item, error)
-	// DeleteItem(itemId int) error
-	// UpdateItem(itemId int, itemData models.Item) (models.Item, error)
+	DeleteItem(itemId int) error
+	UpdateItem(itemId int, itemData *models.Item) (*models.Item, error)
 }
 
 type itemService struct {
@@ -40,4 +40,36 @@ func (is *itemService) GetItem(id int) (*models.Item, error) {
 	}
 
 	return item, nil
+}
+
+func (is *itemService) AddItem(item *models.Item) (int, error) {
+
+	idItem, err := is.itemRepo.AddItem(item)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return idItem, nil
+}
+
+func (is *itemService) UpdateItem(itemId int, itemData *models.Item) (*models.Item, error) {
+
+	item, err := is.itemRepo.UpdateItem(itemId, itemData)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return item, nil
+}
+
+func (is *itemService) DeleteItem(itemId int) error {
+	err := is.itemRepo.DeleteItem(itemId)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

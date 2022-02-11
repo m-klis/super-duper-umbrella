@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"gochicoba/helpers"
+	"gochicoba/models"
 	"gochicoba/service"
 	"net/http"
 	"strconv"
@@ -81,6 +83,72 @@ func (ih *ItemHandler) GetItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.CustomResponse(w, r, http.StatusOK, "success", item)
+	return
+}
+
+func (ih *ItemHandler) CreateItem(w http.ResponseWriter, r *http.Request) {
+	var item *models.Item
+	err := json.NewDecoder(r.Body).Decode(&item)
+	fmt.Println(item)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		return
+	}
+
+	itemId, err := ih.itemService.AddItem(item)
+
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		return
+	}
+
+	helpers.CustomResponse(w, r, http.StatusOK, "success", itemId)
+	return
+}
+
+func (ih *ItemHandler) UpdateItem(w http.ResponseWriter, r *http.Request) {
+	itemID := chi.URLParam(r, "itemID")
+	itemIDInt, err := strconv.Atoi(itemID)
+	//fmt.Println(itemID)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err)
+		return
+	}
+	var item *models.Item
+	err = json.NewDecoder(r.Body).Decode(&item)
+	//fmt.Println(item)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		return
+	}
+
+	item, err = ih.itemService.UpdateItem(itemIDInt, item)
+
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		return
+	}
+	helpers.CustomResponse(w, r, http.StatusOK, "success", item)
+	return
+}
+
+func (ih *ItemHandler) DeleteItem(w http.ResponseWriter, r *http.Request) {
+	itemID := chi.URLParam(r, "itemID")
+	itemIDInt, err := strconv.Atoi(itemID)
+
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		return
+	}
+
+	err = ih.itemService.DeleteItem(itemIDInt)
+
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		return
+	}
+
+	helpers.CustomResponse(w, r, http.StatusOK, "success", nil)
 	return
 }
 

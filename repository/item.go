@@ -10,10 +10,10 @@ import (
 type ItemRepository interface {
 	GetAllItems() ([]*models.Item, error)
 	GetItem(id int) (item *models.Item, err error)
-	// AddItem(item *models.Item) error
+	AddItem(item *models.Item) (id int, err error)
 	// GetItemById(itemId int) (models.Item, error)
-	// DeleteItem(itemId int) error
-	// UpdateItem(itemId int, itemData models.Item) (models.Item, error)
+	DeleteItem(itemId int) error
+	UpdateItem(itemId int, itemData *models.Item) (item *models.Item, err error)
 }
 
 type itemRepository struct {
@@ -46,6 +46,47 @@ func (ir *itemRepository) GetItem(id int) (item *models.Item, err error) {
 		return nil, err
 	}
 	return item, nil
+}
+
+func (ir *itemRepository) AddItem(item *models.Item) (id int, err error) {
+	query := ir.db
+	err = query.Create(&item).Error
+	//fmt.Println(item)
+	if err != nil {
+		return 0, err
+	}
+	return item.ID, nil
+}
+
+func (ir *itemRepository) UpdateItem(itemId int, itemData *models.Item) (item *models.Item, err error) {
+	query := ir.db
+	//field := &itemData
+	err = query.Model(&itemData).Where("id", itemId).Updates(&itemData).Error
+	if err != nil {
+		return nil, err
+	}
+	err = query.Where("id = ?", itemId).First(&itemData).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return itemData, nil
+}
+
+func (ir *itemRepository) DeleteItem(itemId int) error {
+	query := ir.db
+	var item *models.Item
+	err := query.Where("id = ?", itemId).First(&item).Error
+	if err != nil {
+		return err
+	}
+	err = query.Delete(&item).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // func (ir *itemRepository) AddItem(item *models.Item) error {
