@@ -52,6 +52,7 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 	router.NotFound(handler.NotFoundHandler)
 
 	ih := ItemHandler(db)
+	//uh := UserHandler(db)
 	router.Route("/items", func(router chi.Router) {
 		router.Get("/", ih.GetAllItems)
 		router.Post("/", ih.CreateItem)
