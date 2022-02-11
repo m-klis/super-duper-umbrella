@@ -6,10 +6,10 @@
 package main
 
 import (
-	"gorm.io/gorm"
 	"gochicoba/handler"
 	"gochicoba/repository"
 	"gochicoba/service"
+	"gorm.io/gorm"
 )
 
 // Injectors from wire.go:
@@ -19,4 +19,11 @@ func ItemHandler(db *gorm.DB) handler.ItemHandler {
 	itemService := service.NewItemService(itemRepository)
 	itemHandler := handler.NewItemHandler(itemService)
 	return itemHandler
+}
+
+func UserHandler(db *gorm.DB) handler.UserHandler {
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+	userHandler := handler.NewUserHandler(userService)
+	return userHandler
 }

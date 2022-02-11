@@ -18,6 +18,6 @@ func ItemHandler(db *gorm.DB) handler.ItemHandler {
 }
 
 func UserHandler(db *gorm.DB) handler.UserHandler {
-	wire.build(repository.NewUserRepository, service.NewUserService, handler.NewUserHandler)
-	return handler.ItemHandler{}
+	wire.Build(repository.NewUserRepository, service.NewUserService, handler.NewUserHandler)
+	return handler.UserHandler{}
 }
