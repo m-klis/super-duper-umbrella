@@ -11,7 +11,7 @@ type User struct {
 	Nama      string    `json:"nama"`
 	Umur      int       `json:"umur"`
 	Status    string    `json:"status"`
-	CreatedAt time.Time `json:"create_at"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (i *User) Bind(r *http.Request) error {

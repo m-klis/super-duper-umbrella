@@ -9,10 +9,10 @@ import (
 
 type UserRepository interface {
 	GetAllUsers() ([]*models.User, error)
-	GetUser(userId int) (userData *models.User, err error)
-	AddUser(userData *models.User) (id int, err error)
-	DeleteUser(userId int) error
-	UpdateUser(userId int, userData *models.User) (user *models.User, err error)
+	GetUser(int) (*models.User, error)
+	AddUser(*models.User) (int, error)
+	DeleteUser(int) error
+	UpdateUser(int, *models.User) (*models.User, error)
 }
 
 type userRepository struct {

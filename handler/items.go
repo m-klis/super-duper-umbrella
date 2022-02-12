@@ -55,7 +55,7 @@ func NewItemHandler(itemService service.ItemService) ItemHandler {
 func (ih *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {
 	list, err := ih.itemService.GetAllItems()
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", list)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
@@ -69,16 +69,16 @@ func (ih *ItemHandler) GetItem(w http.ResponseWriter, r *http.Request) {
 	itemIDInt, err := strconv.Atoi(itemID)
 	fmt.Println(itemID)
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err)
+		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err.Error())
 		return
 	}
 	item, err := ih.itemService.GetItem(itemIDInt)
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 	if item == nil {
-		helpers.ErrorResponse(w, r, http.StatusNotFound, "not found", err)
+		helpers.ErrorResponse(w, r, http.StatusNotFound, "not found", err.Error())
 		return
 	}
 
@@ -91,14 +91,14 @@ func (ih *ItemHandler) CreateItem(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&item)
 	fmt.Println(item)
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
 	itemId, err := ih.itemService.AddItem(item)
 
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
@@ -111,21 +111,21 @@ func (ih *ItemHandler) UpdateItem(w http.ResponseWriter, r *http.Request) {
 	itemIDInt, err := strconv.Atoi(itemID)
 	//fmt.Println(itemID)
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err)
+		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err.Error())
 		return
 	}
 	var item *models.Item
 	err = json.NewDecoder(r.Body).Decode(&item)
 	//fmt.Println(item)
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
 	item, err = ih.itemService.UpdateItem(itemIDInt, item)
 
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 	helpers.CustomResponse(w, r, http.StatusOK, "success", item)
@@ -137,14 +137,14 @@ func (ih *ItemHandler) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	itemIDInt, err := strconv.Atoi(itemID)
 
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
 	err = ih.itemService.DeleteItem(itemIDInt)
 
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 

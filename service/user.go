@@ -65,7 +65,6 @@ func (us *userService) UpdateUser(userId int, userData *models.User) (*models.Us
 
 func (us *userService) DeleteUser(userId int) error {
 	err := us.userRepo.DeleteUser(userId)
-
 	if err != nil {
 		return err
 	}

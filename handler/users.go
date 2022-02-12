@@ -23,7 +23,7 @@ func NewUserHandler(userService service.UserService) UserHandler {
 func (ih *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	list, err := ih.userService.GetAllUsers()
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", list)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
@@ -32,21 +32,21 @@ func (ih *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ih *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
-	UserID := chi.URLParam(r, "UserID")
+	UserID := chi.URLParam(r, "userID")
 
 	UserIDInt, err := strconv.Atoi(UserID)
 	fmt.Println(UserID)
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err)
+		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err.Error())
 		return
 	}
 	User, err := ih.userService.GetUser(UserIDInt)
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 	if User == nil {
-		helpers.ErrorResponse(w, r, http.StatusNotFound, "not found", err)
+		helpers.ErrorResponse(w, r, http.StatusNotFound, "not found", err.Error())
 		return
 	}
 
@@ -59,14 +59,14 @@ func (ih *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&User)
 	fmt.Println(User)
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
 	UserId, err := ih.userService.AddUser(User)
 
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
@@ -79,21 +79,21 @@ func (ih *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	UserIDInt, err := strconv.Atoi(UserID)
 	//fmt.Println(UserID)
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err)
+		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err.Error())
 		return
 	}
 	var User *models.User
 	err = json.NewDecoder(r.Body).Decode(&User)
 	//fmt.Println(User)
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
 	User, err = ih.userService.UpdateUser(UserIDInt, User)
 
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 	helpers.CustomResponse(w, r, http.StatusOK, "success", User)
@@ -101,18 +101,17 @@ func (ih *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ih *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	UserID := chi.URLParam(r, "UserID")
+	UserID := chi.URLParam(r, "userID")
 	UserIDInt, err := strconv.Atoi(UserID)
 
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
 	err = ih.userService.DeleteUser(UserIDInt)
-
 	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err)
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 

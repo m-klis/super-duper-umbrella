@@ -67,7 +67,13 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 	uh := UserHandler(db)
 
 	router.Route("/users", func(router chi.Router) {
-		router.Get("/", uh.GetUser)
+		router.Get("/", uh.GetAllUsers)
+		router.Post("/", uh.CreateUser)
+		router.Route("/{userID}", func(router chi.Router) {
+			router.Get("/", uh.GetUser)
+			router.Put("/", uh.UpdateUser)
+			router.Delete("/", uh.DeleteUser)
+		})
 	})
 	return router
 }

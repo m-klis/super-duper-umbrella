@@ -9,11 +9,11 @@ import (
 
 type ItemRepository interface {
 	GetAllItems() ([]*models.Item, error)
-	GetItem(id int) (item *models.Item, err error)
-	AddItem(item *models.Item) (id int, err error)
+	GetItem(int) (*models.Item, error)
+	AddItem(*models.Item) (int, error)
 	// GetItemById(itemId int) (models.Item, error)
-	DeleteItem(itemId int) error
-	UpdateItem(itemId int, itemData *models.Item) (item *models.Item, err error)
+	DeleteItem(int) error
+	UpdateItem(int, *models.Item) (*models.Item, error)
 }
 
 type itemRepository struct {

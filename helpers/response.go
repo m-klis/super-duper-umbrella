@@ -26,11 +26,11 @@ func CustomResponse(w http.ResponseWriter, r *http.Request, code int, message in
 }
 
 // Error Response comment
-func ErrorResponse(w http.ResponseWriter, r *http.Request, code int, message string, data interface{}) {
+func ErrorResponse(w http.ResponseWriter, r *http.Request, code int, message string, err string) {
 	render.Status(r, code)
 	render.JSON(w, r, &Response{
 		StatusCode: code,
 		Message:    message,
-		Error:      data,
+		Error:      err,
 	})
 }
