@@ -13,6 +13,19 @@ type Item struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
+type ItemFilter struct {
+	StartDate *time.Time
+	EndDate   *time.Time
+	Name      string
+}
+
+type ItemResponse struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	CreatedAt   string `json:"created_at"`
+}
+
 // type ItemRequest struct {
 // 	ID          int    `json:"id"`
 // 	Name        string `json:"name"`

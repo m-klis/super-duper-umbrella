@@ -8,6 +8,7 @@ import (
 	"gochicoba/service"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi"
 )
@@ -53,13 +54,59 @@ func NewItemHandler(itemService service.ItemService) ItemHandler {
 // }
 
 func (ih *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {
-	list, err := ih.itemService.GetAllItems()
+	startDate := r.URL.Query().Get("start_date")
+	endDate := r.URL.Query().Get("end_date")
+	name := r.URL.Query().Get("name")
+
+	var list []*models.Item
+	var err error
+	var start, end *time.Time
+
+	if startDate != "" && endDate != "" {
+
+		s, err := time.Parse("02-01-2006 MST", startDate+" WIB")
+		if err != nil {
+			helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+			return
+		}
+		e, err := time.Parse("02-01-2006 15:04:05 999999 MST", endDate+" 23:59:59 999999 WIB")
+		if err != nil {
+			helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+			return
+		}
+		fmt.Println(e)
+		start = &s
+		end = &e
+	}
+
+	fmt.Println(startDate, endDate)
+
+	filter := models.ItemFilter{
+		StartDate: start,
+		EndDate:   end,
+		Name:      name,
+	}
+
+	list, err = ih.itemService.GetAllItems(filter)
+
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
-	helpers.CustomResponse(w, r, http.StatusOK, "success", list)
+	response := []models.ItemResponse{}
+	for _, l := range list {
+		createdAt := l.CreatedAt.Format("02-01-2006")
+		r := models.ItemResponse{
+			ID:          l.ID,
+			Name:        l.Name,
+			Description: l.Description,
+			CreatedAt:   createdAt,
+		}
+		response = append(response, r)
+	}
+
+	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
 	return
 }
 
@@ -89,20 +136,20 @@ func (ih *ItemHandler) GetItem(w http.ResponseWriter, r *http.Request) {
 func (ih *ItemHandler) CreateItem(w http.ResponseWriter, r *http.Request) {
 	var item *models.Item
 	err := json.NewDecoder(r.Body).Decode(&item)
-	fmt.Println(item)
+	//fmt.Println(item)
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
-	itemId, err := ih.itemService.AddItem(item)
+	itemData, err := ih.itemService.AddItem(item)
 
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
-	helpers.CustomResponse(w, r, http.StatusOK, "success", itemId)
+	helpers.CustomResponse(w, r, http.StatusOK, "success", itemData)
 	return
 }
 

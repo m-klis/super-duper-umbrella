@@ -33,9 +33,8 @@ func (ih *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 
 func (ih *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	UserID := chi.URLParam(r, "userID")
-
 	UserIDInt, err := strconv.Atoi(UserID)
-	fmt.Println(UserID)
+	//fmt.Println(UserID)
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err.Error())
 		return

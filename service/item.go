@@ -6,9 +6,10 @@ import (
 )
 
 type ItemService interface {
-	GetAllItems() ([]*models.Item, error)
+	GetAllItems(models.ItemFilter) ([]*models.Item, error)
+	// GetAllItemsByDate(time.Time, time.Time) ([]*models.Item, error)
 	GetItem(id int) (*models.Item, error)
-	AddItem(item *models.Item) (id int, err error)
+	AddItem(item *models.Item) (*models.Item, error)
 	// GetItemById(itemId int) (models.Item, error)
 	DeleteItem(itemId int) error
 	UpdateItem(itemId int, itemData *models.Item) (*models.Item, error)
@@ -24,14 +25,24 @@ func NewItemService(itemRepo repository.ItemRepository) ItemService {
 	}
 }
 
-func (is *itemService) GetAllItems() ([]*models.Item, error) {
-	list, err := is.itemRepo.GetAllItems()
+func (is *itemService) GetAllItems(startEnd models.ItemFilter) ([]*models.Item, error) {
+	list, err := is.itemRepo.GetAllItems(startEnd)
 	if err != nil {
 		return nil, err
 	}
 
 	return list, nil
 }
+
+// func (is *itemService) GetAllItemsByDate(startDate time.Time, endDate time.Time) ([]*models.Item, error) {
+// 	list, err := is.itemRepo.GetAllItemsByDate(startDate, endDate)
+
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return list, nil
+// }
 
 func (is *itemService) GetItem(id int) (*models.Item, error) {
 	item, err := is.itemRepo.GetItem(id)
@@ -42,15 +53,15 @@ func (is *itemService) GetItem(id int) (*models.Item, error) {
 	return item, nil
 }
 
-func (is *itemService) AddItem(item *models.Item) (int, error) {
+func (is *itemService) AddItem(item *models.Item) (*models.Item, error) {
 
-	idItem, err := is.itemRepo.AddItem(item)
+	itemData, err := is.itemRepo.AddItem(item)
 
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
-	return idItem, nil
+	return itemData, nil
 }
 
 func (is *itemService) UpdateItem(itemId int, itemData *models.Item) (*models.Item, error) {
