@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
+	"github.com/go-playground/validator/v10"
 )
 
 type ItemHandler struct {
@@ -113,17 +114,7 @@ func (ih *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := []models.ItemResponse{}
-	for _, l := range list {
-		createdAt := helpers.ConvertMonth(l.CreatedAt)
-		r := models.ItemResponse{
-			ID:          l.ID,
-			Name:        l.Name,
-			Description: l.Description,
-			CreatedAt:   createdAt,
-		}
-		response = append(response, r)
-	}
+	response := helpers.BatchItemDate(list)
 
 	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
 	return
@@ -145,7 +136,8 @@ func (ih *ItemHandler) GetItem(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorResponse(w, r, http.StatusNotFound, "not found", err.Error())
 		return
 	}
-	helpers.CustomResponse(w, r, http.StatusOK, "success", item)
+	response := helpers.SingleItemDate(item)
+	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
 	return
 }
 
@@ -158,14 +150,20 @@ func (ih *ItemHandler) CreateItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	itemData, err := ih.itemService.AddItem(item)
-
+	validate := validator.New()
+	err = validate.Struct(item)
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
-	helpers.CustomResponse(w, r, http.StatusOK, "success", itemData)
+	itemData, err := ih.itemService.AddItem(item)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+		return
+	}
+	response := helpers.SingleItemDate(itemData)
+	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
 	return
 }
 
@@ -191,7 +189,8 @@ func (ih *ItemHandler) UpdateItem(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
-	helpers.CustomResponse(w, r, http.StatusOK, "success", item)
+	response := helpers.SingleItemDate(item)
+	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
 	return
 }
 

@@ -54,9 +54,7 @@ func (is *itemService) GetItem(id int) (*models.Item, error) {
 }
 
 func (is *itemService) AddItem(item *models.Item) (*models.Item, error) {
-
 	itemData, err := is.itemRepo.AddItem(item)
-
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +63,6 @@ func (is *itemService) AddItem(item *models.Item) (*models.Item, error) {
 }
 
 func (is *itemService) UpdateItem(itemId int, itemData *models.Item) (*models.Item, error) {
-
 	item, err := is.itemRepo.UpdateItem(itemId, itemData)
 
 	if err != nil {
@@ -77,7 +74,6 @@ func (is *itemService) UpdateItem(itemId int, itemData *models.Item) (*models.It
 
 func (is *itemService) DeleteItem(itemId int) error {
 	err := is.itemRepo.DeleteItem(itemId)
-
 	if err != nil {
 		return err
 	}

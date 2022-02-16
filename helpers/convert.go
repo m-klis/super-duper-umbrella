@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"gochicoba/models"
 	"time"
 )
 
@@ -38,4 +39,28 @@ func ConvertMonth(t time.Time) string {
 		b = " Desember "
 	}
 	return t.Format("02") + b + t.Format("2006")
+}
+
+func BatchItemDate(l []*models.Item) []models.ItemResponse {
+	response := []models.ItemResponse{}
+	for _, li := range l {
+		createdAt := ConvertMonth(li.CreatedAt)
+		r := models.ItemResponse{
+			ID:          li.ID,
+			Name:        li.Name,
+			Description: li.Description,
+			CreatedAt:   createdAt,
+		}
+		response = append(response, r)
+	}
+	return response
+}
+
+func SingleItemDate(m *models.Item) models.ItemResponse {
+	return models.ItemResponse{
+		ID:          m.ID,
+		Name:        m.Name,
+		Description: m.Description,
+		CreatedAt:   ConvertMonth(m.CreatedAt),
+	}
 }

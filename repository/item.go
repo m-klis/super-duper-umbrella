@@ -2,16 +2,14 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 	"gochicoba/models"
-	"time"
 
 	"gorm.io/gorm"
 )
 
 type ItemRepository interface {
 	GetAllItems(models.ItemFilter) ([]*models.Item, error)
-	GetAllItemsByDate(time.Time, time.Time) ([]*models.Item, error)
+	// GetAllItemsByDate(time.Time, time.Time) ([]*models.Item, error)
 	GetItem(int) (*models.Item, error)
 	AddItem(*models.Item) (*models.Item, error)
 	// GetItemById(itemId int) (models.Item, error)
@@ -30,9 +28,9 @@ func NewItemRepository(db *gorm.DB) ItemRepository {
 }
 
 func (ir *itemRepository) GetAllItems(startEnd models.ItemFilter) ([]*models.Item, error) {
-
 	var list []*models.Item
 	query := ir.db.Debug()
+	// query := ir.db
 
 	if startEnd.StartDate != nil && startEnd.EndDate != nil {
 		query = query.Where("created_at BETWEEN ? AND ?", startEnd.StartDate, startEnd.EndDate)
@@ -51,27 +49,28 @@ func (ir *itemRepository) GetAllItems(startEnd models.ItemFilter) ([]*models.Ite
 	case startEnd.View <= 0:
 		startEnd.View = 5
 	}
+
 	offset := (startEnd.Page - 1) * startEnd.View
-	fmt.Println(offset)
+
 	err := query.Order("ID ASC").Offset(offset).Limit(startEnd.View).Find(&list).Error
-
-	if err != nil {
-		return nil, err
-	}
-	return list, nil
-}
-
-func (ir *itemRepository) GetAllItemsByDate(startDate time.Time, endDate time.Time) ([]*models.Item, error) {
-	var list []*models.Item
-	query := ir.db
-	//fmt.Printf("%v\n%v\n", startDate, endDate)
-	err := query.Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
 
 	return list, nil
 }
+
+// func (ir *itemRepository) GetAllItemsByDate(startDate time.Time, endDate time.Time) ([]*models.Item, error) {
+// 	var list []*models.Item
+// 	query := ir.db
+// 	//fmt.Printf("%v\n%v\n", startDate, endDate)
+// 	err := query.Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&list).Error
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return list, nil
+// }
 
 func (ir *itemRepository) GetItem(id int) (item *models.Item, err error) {
 	query := ir.db
@@ -88,7 +87,6 @@ func (ir *itemRepository) GetItem(id int) (item *models.Item, err error) {
 func (ir *itemRepository) AddItem(itemData *models.Item) (item *models.Item, err error) {
 	query := ir.db
 	err = query.Create(&itemData).Error
-	//fmt.Println(item)
 	if err != nil {
 		return nil, err
 	}
@@ -101,11 +99,12 @@ func (ir *itemRepository) AddItem(itemData *models.Item) (item *models.Item, err
 
 func (ir *itemRepository) UpdateItem(itemId int, itemData *models.Item) (item *models.Item, err error) {
 	query := ir.db
-	//field := &itemData
+
 	err = query.Model(&itemData).Where("id", itemId).Updates(&itemData).Error
 	if err != nil {
 		return nil, err
 	}
+
 	err = query.Where("id = ?", itemId).First(&itemData).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -113,20 +112,24 @@ func (ir *itemRepository) UpdateItem(itemId int, itemData *models.Item) (item *m
 		}
 		return nil, err
 	}
+
 	return itemData, nil
 }
 
 func (ir *itemRepository) DeleteItem(itemId int) error {
 	query := ir.db
+
 	var item *models.Item
 	err := query.Where("id = ?", itemId).First(&item).Error
 	if err != nil {
 		return err
 	}
+
 	err = query.Delete(&item).Error
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
