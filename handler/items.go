@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"gochicoba/helpers"
 	"gochicoba/models"
 	"gochicoba/service"
@@ -57,13 +56,14 @@ func (ih *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {
 	startDate := r.URL.Query().Get("start_date")
 	endDate := r.URL.Query().Get("end_date")
 	name := r.URL.Query().Get("name")
+	page := r.URL.Query().Get("page")
+	view := r.URL.Query().Get("view")
 
 	var list []*models.Item
 	var err error
 	var start, end *time.Time
 
 	if startDate != "" && endDate != "" {
-
 		s, err := time.Parse("02-01-2006 MST", startDate+" WIB")
 		if err != nil {
 			helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
@@ -74,17 +74,36 @@ func (ih *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {
 			helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 			return
 		}
-		fmt.Println(e)
+		// fmt.Println(e)
 		start = &s
 		end = &e
 	}
 
-	fmt.Println(startDate, endDate)
+	var p, v int
+	if page == "" {
+		page = "0"
+	}
+	p, err = strconv.Atoi(page)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+		return
+	}
+
+	if view == "" {
+		view = "0"
+	}
+	v, err = strconv.Atoi(view)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+		return
+	}
 
 	filter := models.ItemFilter{
 		StartDate: start,
 		EndDate:   end,
 		Name:      name,
+		Page:      p,
+		View:      v,
 	}
 
 	list, err = ih.itemService.GetAllItems(filter)
@@ -96,7 +115,7 @@ func (ih *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {
 
 	response := []models.ItemResponse{}
 	for _, l := range list {
-		createdAt := l.CreatedAt.Format("02-01-2006")
+		createdAt := helpers.ConvertMonth(l.CreatedAt)
 		r := models.ItemResponse{
 			ID:          l.ID,
 			Name:        l.Name,
@@ -112,9 +131,7 @@ func (ih *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {
 
 func (ih *ItemHandler) GetItem(w http.ResponseWriter, r *http.Request) {
 	itemID := chi.URLParam(r, "itemID")
-
 	itemIDInt, err := strconv.Atoi(itemID)
-	fmt.Println(itemID)
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err.Error())
 		return
@@ -128,7 +145,6 @@ func (ih *ItemHandler) GetItem(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorResponse(w, r, http.StatusNotFound, "not found", err.Error())
 		return
 	}
-
 	helpers.CustomResponse(w, r, http.StatusOK, "success", item)
 	return
 }

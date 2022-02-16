@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"gochicoba/models"
 	"time"
 
@@ -41,7 +42,19 @@ func (ir *itemRepository) GetAllItems(startEnd models.ItemFilter) ([]*models.Ite
 		query = query.Where("name LIKE ?", "%"+startEnd.Name+"%")
 	}
 
-	err := query.Find(&list).Error
+	if startEnd.Page == 0 {
+		startEnd.Page = 1
+	}
+	switch {
+	case startEnd.View > 25:
+		startEnd.View = 25
+	case startEnd.View <= 0:
+		startEnd.View = 5
+	}
+	offset := (startEnd.Page - 1) * startEnd.View
+	fmt.Println(offset)
+	err := query.Order("ID ASC").Offset(offset).Limit(startEnd.View).Find(&list).Error
+
 	if err != nil {
 		return nil, err
 	}

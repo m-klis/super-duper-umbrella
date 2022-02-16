@@ -17,6 +17,8 @@ type ItemFilter struct {
 	StartDate *time.Time
 	EndDate   *time.Time
 	Name      string
+	Page      int
+	View      int
 }
 
 type ItemResponse struct {
