@@ -8,9 +8,9 @@ import (
 )
 
 type UserRepository interface {
-	GetAllUsers() ([]*models.User, error)
+	GetAllUsers(models.UserFilter) ([]*models.User, error)
 	GetUser(int) (*models.User, error)
-	AddUser(*models.User) (int, error)
+	AddUser(*models.User) (*models.User, error)
 	DeleteUser(int) error
 	UpdateUser(int, *models.User) (*models.User, error)
 }
@@ -25,9 +25,22 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	}
 }
 
-func (ur *userRepository) GetAllUsers() (userList []*models.User, err error) {
+func (ur *userRepository) GetAllUsers(uf models.UserFilter) (userList []*models.User, err error) {
 	var list []*models.User
-	query := ur.db
+	query := ur.db.Debug()
+
+	if uf.Name != "" {
+		query = query.Where("name LIKE ?", "%"+uf.Name+"%")
+	}
+
+	if uf.Status != "" {
+		query = query.Where("status LIKE ?", "%"+uf.Status+"%")
+	}
+
+	if uf.AgeUp != 0 && uf.AgeDown != 0 {
+		query = query.Where("age BETWEEN ? AND ?", uf.AgeDown, uf.AgeUp)
+	}
+
 	err = query.Find(&list).Error
 	if err != nil {
 		return nil, err
@@ -44,17 +57,18 @@ func (ur *userRepository) GetUser(id int) (user *models.User, err error) {
 		}
 		return nil, err
 	}
+
 	return user, nil
 }
 
-func (ur *userRepository) AddUser(userData *models.User) (id int, err error) {
+func (ur *userRepository) AddUser(userData *models.User) (*models.User, error) {
 	query := ur.db
-	err = query.Create(&userData).Error
+	err := query.Create(&userData).Error
 	//fmt.Println(item)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	return userData.ID, nil
+	return userData, nil
 }
 
 func (ur *userRepository) UpdateUser(userId int, userData *models.User) (user *models.User, err error) {

@@ -6,11 +6,11 @@ import (
 )
 
 type UserService interface {
-	GetAllUsers() ([]*models.User, error)
-	GetUser(userId int) (userData *models.User, err error)
-	AddUser(user *models.User) (userId int, err error)
-	DeleteUser(userId int) error
-	UpdateUser(userId int, userData *models.User) (user *models.User, err error)
+	GetAllUsers(models.UserFilter) ([]*models.User, error)
+	GetUser(int) (*models.User, error)
+	AddUser(*models.User) (*models.User, error)
+	DeleteUser(int) error
+	UpdateUser(int, *models.User) (*models.User, error)
 }
 
 type userService struct {
@@ -23,8 +23,8 @@ func NewUserService(userRepo repository.UserRepository) UserService {
 	}
 }
 
-func (us *userService) GetAllUsers() ([]*models.User, error) {
-	list, err := us.userRepo.GetAllUsers()
+func (us *userService) GetAllUsers(uf models.UserFilter) ([]*models.User, error) {
+	list, err := us.userRepo.GetAllUsers(uf)
 	if err != nil {
 		return nil, err
 	}
@@ -41,15 +41,15 @@ func (us *userService) GetUser(id int) (*models.User, error) {
 	return item, nil
 }
 
-func (us *userService) AddUser(userData *models.User) (int, error) {
+func (us *userService) AddUser(userData *models.User) (*models.User, error) {
 
-	idUser, err := us.userRepo.AddUser(userData)
+	user, err := us.userRepo.AddUser(userData)
 
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
-	return idUser, nil
+	return user, nil
 }
 
 func (us *userService) UpdateUser(userId int, userData *models.User) (*models.User, error) {
