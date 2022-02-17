@@ -28,3 +28,10 @@ func UserHandler(db *gorm.DB) handler.UserHandler {
 	userHandler := handler.NewUserHandler(userService)
 	return userHandler
 }
+
+func BuyHandler(db *gorm.DB) handler.BuyHandler {
+	buyRepository := repository.NewBuyRepository(db)
+	buyService := service.NewBuyService(buyRepository)
+	buyHandler := handler.NewBuyHandler(buyService)
+	return buyHandler
+}

@@ -50,6 +50,7 @@ func BatchItemDate(l []*models.Item) []models.ItemResponse {
 			Name:        li.Name,
 			Description: li.Description,
 			CreatedAt:   createdAt,
+			Price:       li.Price,
 		}
 		response = append(response, r)
 	}
@@ -62,5 +63,6 @@ func SingleItemDate(m *models.Item) models.ItemResponse {
 		Name:        m.Name,
 		Description: m.Description,
 		CreatedAt:   ConvertMonth(m.CreatedAt),
+		Price:       m.Price,
 	}
 }

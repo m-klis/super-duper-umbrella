@@ -22,6 +22,11 @@ func UserHandler(db *gorm.DB) handler.UserHandler {
 	return handler.UserHandler{}
 }
 
+func BuyHandler(db *gorm.DB) handler.BuyHandler {
+	wire.Build(repository.NewBuyRepository, service.NewBuyService, handler.NewBuyHandler)
+	return handler.BuyHandler{}
+}
+
 // func LoginHandler(db *gorm.DB) handler.LoginHandler {
 // 	wire.Build(repository.NewLoginRepository, service.NewLoginService, handler.NewLoginHandler)
 // 	return handler.LoginHandler{}

@@ -75,6 +75,19 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 			router.Delete("/", uh.DeleteUser)
 		})
 	})
+
+	ub := BuyHandler(db)
+
+	router.Route("/buys", func(router chi.Router) {
+		router.Get("/", ub.GetAllBuys)
+		// router.Post("/", ub.CreateBuy)
+		// router.Route("/{userID}", func(router chi.Router) {
+		// 	router.Get("/", ub.GetBuy)
+		// 	router.Put("/", ub.UpdateBuy)
+		// 	router.Delete("/", ub.DeleteBuy)
+		// })
+	})
+
 	return router
 }
 

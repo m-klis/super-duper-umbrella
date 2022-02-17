@@ -9,6 +9,7 @@ type Item struct {
 	Name        string    `json:"name" validate:"required"`
 	Description string    `json:"description" validate:"required"`
 	CreatedAt   time.Time `json:"created_at"`
+	Price       int       `json:"price" validate:"required"`
 }
 
 type ItemFilter struct {
@@ -24,6 +25,7 @@ type ItemResponse struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	CreatedAt   string `json:"created_at"`
+	Price       int    `json:"price"`
 }
 
 // type ItemRequest struct {
