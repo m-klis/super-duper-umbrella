@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"gochicoba/helpers"
 	"gochicoba/models"
 	"gochicoba/service"
@@ -52,12 +51,22 @@ func (ih *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 		Status:  status,
 	}
 
-	fmt.Println(filter.Name, " + ", filter.Status)
-
-	list, err := ih.userService.GetAllUsers(filter)
+	ul, err := ih.userService.GetAllUsers(filter)
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
+	}
+
+	var list = make([]models.UserResponse, 0)
+	for _, ud := range ul {
+		response := models.UserResponse{
+			ID:        ud.ID,
+			Name:      ud.Name,
+			Age:       ud.Age,
+			Status:    ud.Status,
+			CreatedAt: helpers.ConvertMonth(ud.CreatedAt),
+		}
+		list = append(list, response)
 	}
 
 	helpers.CustomResponse(w, r, http.StatusOK, "success", list)
@@ -65,24 +74,32 @@ func (ih *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ih *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
-	UserID := chi.URLParam(r, "userID")
-	UserIDInt, err := strconv.Atoi(UserID)
-	//fmt.Println(UserID)
+	iduser := chi.URLParam(r, "userID")
+	ui, err := strconv.Atoi(iduser)
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err.Error())
 		return
 	}
-	User, err := ih.userService.GetUser(UserIDInt)
+
+	ud, err := ih.userService.GetUser(ui)
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
-	if User == nil {
+	if ud == nil {
 		helpers.ErrorResponse(w, r, http.StatusNotFound, "not found", err.Error())
 		return
 	}
 
-	helpers.CustomResponse(w, r, http.StatusOK, "success", User)
+	response := models.UserResponse{
+		ID:        ud.ID,
+		Name:      ud.Name,
+		Age:       ud.Age,
+		Status:    ud.Status,
+		CreatedAt: helpers.ConvertMonth(ud.CreatedAt),
+	}
+
+	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
 	return
 }
 
@@ -123,39 +140,46 @@ func (ih *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 func (ih *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	UserID := chi.URLParam(r, "userID")
 	UserIDInt, err := strconv.Atoi(UserID)
-	//fmt.Println(UserID)
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusBadRequest, "id must be integer", err.Error())
 		return
 	}
+
 	var User *models.User
 	err = json.NewDecoder(r.Body).Decode(&User)
-	//fmt.Println(User)
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
-	User, err = ih.userService.UpdateUser(UserIDInt, User)
-
+	ud, err := ih.userService.UpdateUser(UserIDInt, User)
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
-	helpers.CustomResponse(w, r, http.StatusOK, "success", User)
+
+	response := models.UserResponse{
+		ID:        ud.ID,
+		Name:      ud.Name,
+		Age:       ud.Age,
+		Status:    ud.Status,
+		CreatedAt: helpers.ConvertMonth(ud.CreatedAt),
+	}
+
+	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
 	return
 }
 
 func (ih *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	UserID := chi.URLParam(r, "userID")
-	UserIDInt, err := strconv.Atoi(UserID)
+	ui := chi.URLParam(r, "userID")
+	id, err := strconv.Atoi(ui)
 
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 
-	err = ih.userService.DeleteUser(UserIDInt)
+	err = ih.userService.DeleteUser(id)
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return

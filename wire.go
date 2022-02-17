@@ -21,3 +21,8 @@ func UserHandler(db *gorm.DB) handler.UserHandler {
 	wire.Build(repository.NewUserRepository, service.NewUserService, handler.NewUserHandler)
 	return handler.UserHandler{}
 }
+
+// func LoginHandler(db *gorm.DB) handler.LoginHandler {
+// 	wire.Build(repository.NewLoginRepository, service.NewLoginService, handler.NewLoginHandler)
+// 	return handler.LoginHandler{}
+// }
