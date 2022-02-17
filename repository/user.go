@@ -53,7 +53,7 @@ func (ur *userRepository) GetUser(id int) (user *models.User, err error) {
 	err = query.Where("id = ?", id).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, err
 		}
 		return nil, err
 	}
