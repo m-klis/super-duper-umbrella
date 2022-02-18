@@ -8,7 +8,7 @@ import (
 type BuyService interface {
 	GetAllBuys() ([]*models.Buy, error)
 	// GetBuy(int) (*models.Buy, error)
-	// AddBuy(*models.Buy) (*models.Buy, error)
+	// CreateBuy(*models.Buy) (*models.Buy, error)
 	// DeleteBuy(int) error
 	// UpdateBuy(int, *models.Item) (*models.Item, error)
 }
@@ -34,9 +34,12 @@ func (bs *buyService) GetAllBuys() ([]*models.Buy, error) {
 // func GetBuy(id int) (obd *models.Buy, err error) {
 // 	return nil, nil
 // }
-// func AddBuy(bd *models.Buy) (obd *models.Buy, err error) {
+
+// func CreateBuy(bd *models.Buy) (obd *models.Buy, err error) {
+
 // 	return nil, nil
 // }
+
 // func DeleteBuy(id int) (err error) {
 // 	return err
 // }

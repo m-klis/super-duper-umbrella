@@ -9,7 +9,7 @@ import (
 type BuyRepository interface {
 	GetAllBuys() ([]*models.Buy, error)
 	// GetBuy(int) (*models.Buy, error)
-	// AddBuy(*models.Buy) (*models.Buy, error)
+	// CreateBuy(*models.Buy) (*models.Buy, error)
 	// DeleteBuy(int) error
 	// UpdateBuy(int, *models.Buy) (*models.Buy, error)
 }
@@ -38,6 +38,8 @@ func (br *buyRepository) GetAllBuys() ([]*models.Buy, error) {
 }
 
 // func GetBuy(id int) (obd *models.Buy, err error)                    { return }
-// func AddBuy(bd *models.Buy) (obd *models.Buy, err error)            { return }
+
+// func CreateBuy(bd *models.Buy) (obd *models.Buy, err error) { return }
+
 // func DeleteBuy(id int) (err error)                                  { return }
 // func UpdateBuy(id int, bd *models.Buy) (obd *models.Buy, err error) { return }

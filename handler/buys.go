@@ -2,6 +2,7 @@ package handler
 
 import (
 	"gochicoba/helpers"
+	"gochicoba/models"
 	"gochicoba/service"
 	"net/http"
 )
@@ -20,12 +21,30 @@ func (bh *BuyHandler) GetAllBuys(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
-	helpers.CustomResponse(w, r, http.StatusOK, "success", list)
+
+	response := make([]models.BuyResponse, 0)
+
+	for _, l := range list {
+		bd := models.BuyResponse{
+			ID:          l.ID,
+			IdUser:      l.IdUser,
+			ItemAmount:  l.ItemAmount,
+			PriceAmount: l.PriceAmount,
+			CreatedAt:   helpers.ConvertMonth(l.CreatedAt),
+		}
+		response = append(response, bd)
+	}
+
+	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
 	return
 }
 
 // func (bh *BuyHandler) CreateBuy(w http.ResponseWriter, r *http.Request) {
-
+// 	list, err := bh.buyService.CreateBuy()
+// 	if err != nil {
+// 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+// 		return
+// 	}
 // }
 
 // func (bh *BuyHandler) GetBuy(w http.ResponseWriter, r *http.Request) {
