@@ -7,10 +7,8 @@ import (
 
 type BuyService interface {
 	GetAllBuys() ([]*models.Buy, error)
-	// GetBuy(int) (*models.Buy, error)
 	CreateBuy(models.Buy, []models.BuyDetail) (*models.Buy, error)
-	// DeleteBuy(int) error
-	// UpdateBuy(int, *models.Item) (*models.Item, error)
+	CreateTransaction(float64, *models.RequestTransaction) (*models.Transaction, error)
 }
 
 type buyService struct {
@@ -26,26 +24,23 @@ func NewBuyService(buyRepo repository.BuyRepository) BuyService {
 func (bs *buyService) GetAllBuys() ([]*models.Buy, error) {
 	list, err := bs.buyRepo.GetAllBuys()
 	if err != nil {
-		return list, err
+		return nil, err
 	}
-	return list, err
+	return list, nil
 }
-
-// func (bs *buyService) GetBuy(id int) (obd *models.Buy, err error) {
-// 	return nil, nil
-// }
 
 func (bs *buyService) CreateBuy(db models.Buy, di []models.BuyDetail) (*models.Buy, error) {
 	list, err := bs.buyRepo.CreateBuy(&db, di)
 	if err != nil {
-		return list, err
+		return nil, err
 	}
-	return list, err
+	return list, nil
 }
 
-// func (bs *buyService) DeleteBuy(id int) (err error) {
-// 	return err
-// }
-// func (bs *buyService) UpdateBuy(id int, bd *models.Buy) (obd *models.Buy, err error) {
-// 	return nil, nil
-// }
+func (bs *buyService) CreateTransaction(amount float64, rt *models.RequestTransaction) (*models.Transaction, error) {
+	res, err := bs.buyRepo.CreateTransaction(amount, rt)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

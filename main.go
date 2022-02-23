@@ -81,11 +81,15 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 	router.Route("/buys", func(router chi.Router) {
 		router.Get("/", ub.GetAllBuys)
 		router.Post("/", ub.CreateBuy)
-		// router.Route("/{userID}", func(router chi.Router) {
-		// 	router.Get("/", ub.GetBuy)
-		// 	router.Put("/", ub.UpdateBuy)
-		// 	router.Delete("/", ub.DeleteBuy)
-		// })
+		router.Route("/transaction", func(router chi.Router) {
+			router.Post("/", ub.CreateTransaction)
+		})
+	})
+
+	lh := LoginHandler(db)
+
+	router.Route("/login", func(router chi.Router) {
+		router.Post("/", lh.Login)
 	})
 
 	return router

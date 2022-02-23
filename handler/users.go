@@ -21,6 +21,11 @@ func NewUserHandler(userService service.UserService) UserHandler {
 }
 
 func (ih *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	err := helpers.Authentication(r)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusUnauthorized, "unauthorized", err.Error())
+		return
+	}
 	name := r.URL.Query().Get("name")
 	ageup := r.URL.Query().Get("ageup")
 	agedown := r.URL.Query().Get("agedown")
@@ -70,7 +75,6 @@ func (ih *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.CustomResponse(w, r, http.StatusOK, "success", list)
-	return
 }
 
 func (ih *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
@@ -100,7 +104,6 @@ func (ih *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
-	return
 }
 
 func (ih *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -134,7 +137,6 @@ func (ih *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
-	return
 }
 
 func (ih *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -167,7 +169,6 @@ func (ih *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
-	return
 }
 
 func (ih *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -186,5 +187,4 @@ func (ih *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.CustomResponse(w, r, http.StatusOK, "success", nil)
-	return
 }

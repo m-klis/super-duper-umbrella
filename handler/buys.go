@@ -10,11 +10,17 @@ import (
 )
 
 type BuyHandler struct {
-	buyService service.BuyService
+	buyService  service.BuyService
+	itemService service.ItemService
+	userService service.UserService
 }
 
-func NewBuyHandler(buyService service.BuyService) BuyHandler {
-	return BuyHandler{buyService: buyService}
+func NewBuyHandler(buyService service.BuyService, itemService service.ItemService, userService service.UserService) BuyHandler {
+	return BuyHandler{
+		buyService:  buyService,
+		itemService: itemService,
+		userService: userService,
+	}
 }
 
 func (bh *BuyHandler) GetAllBuys(w http.ResponseWriter, r *http.Request) {
@@ -70,14 +76,41 @@ func (bh *BuyHandler) CreateBuy(w http.ResponseWriter, r *http.Request) {
 	helpers.CustomResponse(w, r, http.StatusOK, "success", data)
 }
 
-// func (bh *BuyHandler) GetBuy(w http.ResponseWriter, r *http.Request) {
+func (bh *BuyHandler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
+	var req *models.RequestTransaction
+	var res *models.Transaction
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+		return
+	}
 
-// }
+	user, err := bh.userService.GetUser(req.UserId)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+		return
+	}
+	if user == nil {
+		helpers.ErrorResponse(w, r, http.StatusNotFound, "user not found", "")
+		return
+	}
 
-// func (bh *BuyHandler) UpdateBuy(w http.ResponseWriter, r *http.Request) {
+	item, err := bh.itemService.GetItem(req.ItemId)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+		return
+	}
+	if item == nil {
+		helpers.ErrorResponse(w, r, http.StatusNotFound, "item not found", "")
+		return
+	}
 
-// }
+	amount := item.Price * float64(req.ItemQty)
 
-// func (bh *BuyHandler) DeleteBuy(w http.ResponseWriter, r *http.Request) {
-
-// }
+	res, err = bh.buyService.CreateTransaction(amount, req)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+		return
+	}
+	helpers.CustomResponse(w, r, http.StatusOK, "success", res)
+}

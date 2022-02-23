@@ -117,7 +117,6 @@ func (ih *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {
 	response := helpers.BatchItemDate(list)
 
 	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
-	return
 }
 
 func (ih *ItemHandler) GetItem(w http.ResponseWriter, r *http.Request) {
@@ -138,7 +137,6 @@ func (ih *ItemHandler) GetItem(w http.ResponseWriter, r *http.Request) {
 	}
 	response := helpers.SingleItemDate(item)
 	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
-	return
 }
 
 func (ih *ItemHandler) CreateItem(w http.ResponseWriter, r *http.Request) {
@@ -164,7 +162,6 @@ func (ih *ItemHandler) CreateItem(w http.ResponseWriter, r *http.Request) {
 	}
 	response := helpers.SingleItemDate(itemData)
 	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
-	return
 }
 
 func (ih *ItemHandler) UpdateItem(w http.ResponseWriter, r *http.Request) {
@@ -191,7 +188,6 @@ func (ih *ItemHandler) UpdateItem(w http.ResponseWriter, r *http.Request) {
 	}
 	response := helpers.SingleItemDate(item)
 	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
-	return
 }
 
 func (ih *ItemHandler) DeleteItem(w http.ResponseWriter, r *http.Request) {
@@ -211,7 +207,6 @@ func (ih *ItemHandler) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.CustomResponse(w, r, http.StatusOK, "success", nil)
-	return
 }
 
 // func DeleteItem(w http.ResponseWriter, r *http.Request) {

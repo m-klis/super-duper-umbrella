@@ -32,6 +32,15 @@ func UserHandler(db *gorm.DB) handler.UserHandler {
 func BuyHandler(db *gorm.DB) handler.BuyHandler {
 	buyRepository := repository.NewBuyRepository(db)
 	buyService := service.NewBuyService(buyRepository)
-	buyHandler := handler.NewBuyHandler(buyService)
+	itemRepository := repository.NewItemRepository(db)
+	itemService := service.NewItemService(itemRepository)
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+	buyHandler := handler.NewBuyHandler(buyService, itemService, userService)
 	return buyHandler
+}
+
+func LoginHandler(db *gorm.DB) handler.LoginHandler {
+	loginHandler := handler.NewLoginHandler()
+	return loginHandler
 }
