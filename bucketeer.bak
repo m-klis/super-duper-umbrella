@@ -1,0 +1,427 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.2 (Ubuntu 14.2-1.pgdg20.04+1)
+-- Dumped by pg_dump version 14.2 (Ubuntu 14.2-1.pgdg20.04+1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: buy_details; Type: TABLE; Schema: public; Owner: bucketeer
+--
+
+CREATE TABLE public.buy_details (
+    id_buy integer,
+    id_item integer,
+    item_price double precision,
+    item_amount integer,
+    price_amount double precision,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.buy_details OWNER TO bucketeer;
+
+--
+-- Name: buys; Type: TABLE; Schema: public; Owner: bucketeer
+--
+
+CREATE TABLE public.buys (
+    id integer NOT NULL,
+    id_user integer,
+    item_amount integer,
+    price_amount real,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.buys OWNER TO bucketeer;
+
+--
+-- Name: buys_id_seq; Type: SEQUENCE; Schema: public; Owner: bucketeer
+--
+
+CREATE SEQUENCE public.buys_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.buys_id_seq OWNER TO bucketeer;
+
+--
+-- Name: buys_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bucketeer
+--
+
+ALTER SEQUENCE public.buys_id_seq OWNED BY public.buys.id;
+
+
+--
+-- Name: items; Type: TABLE; Schema: public; Owner: bucketeer
+--
+
+CREATE TABLE public.items (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    description text NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    price double precision NOT NULL
+);
+
+
+ALTER TABLE public.items OWNER TO bucketeer;
+
+--
+-- Name: items_id_seq; Type: SEQUENCE; Schema: public; Owner: bucketeer
+--
+
+CREATE SEQUENCE public.items_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.items_id_seq OWNER TO bucketeer;
+
+--
+-- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bucketeer
+--
+
+ALTER SEQUENCE public.items_id_seq OWNED BY public.items.id;
+
+
+--
+-- Name: logins; Type: TABLE; Schema: public; Owner: bucketeer
+--
+
+CREATE TABLE public.logins (
+    id integer NOT NULL,
+    id_user integer NOT NULL,
+    username character varying,
+    password character varying,
+    created_at timestamp without time zone DEFAULT now(),
+    update_at timestamp without time zone DEFAULT now(),
+    token character varying
+);
+
+
+ALTER TABLE public.logins OWNER TO bucketeer;
+
+--
+-- Name: logins_id_seq; Type: SEQUENCE; Schema: public; Owner: bucketeer
+--
+
+CREATE SEQUENCE public.logins_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.logins_id_seq OWNER TO bucketeer;
+
+--
+-- Name: logins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bucketeer
+--
+
+ALTER SEQUENCE public.logins_id_seq OWNED BY public.logins.id;
+
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: bucketeer
+--
+
+CREATE TABLE public.schema_migrations (
+    version bigint NOT NULL,
+    dirty boolean NOT NULL
+);
+
+
+ALTER TABLE public.schema_migrations OWNER TO bucketeer;
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: bucketeer
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    age integer NOT NULL,
+    status character varying(100),
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.users OWNER TO bucketeer;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: bucketeer
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO bucketeer;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bucketeer
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: buys id; Type: DEFAULT; Schema: public; Owner: bucketeer
+--
+
+ALTER TABLE ONLY public.buys ALTER COLUMN id SET DEFAULT nextval('public.buys_id_seq'::regclass);
+
+
+--
+-- Name: items id; Type: DEFAULT; Schema: public; Owner: bucketeer
+--
+
+ALTER TABLE ONLY public.items ALTER COLUMN id SET DEFAULT nextval('public.items_id_seq'::regclass);
+
+
+--
+-- Name: logins id; Type: DEFAULT; Schema: public; Owner: bucketeer
+--
+
+ALTER TABLE ONLY public.logins ALTER COLUMN id SET DEFAULT nextval('public.logins_id_seq'::regclass);
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: bucketeer
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Data for Name: buy_details; Type: TABLE DATA; Schema: public; Owner: bucketeer
+--
+
+COPY public.buy_details (id_buy, id_item, item_price, item_amount, price_amount, created_at) FROM stdin;
+1	5	3000	1	3000	2022-02-17 20:27:57.662952
+1	6	3000	1	3000	2022-02-17 20:29:33.161422
+1	10	3000	1	3000	2022-02-17 20:31:03.605587
+2	10	3000	1	3000	2022-02-18 16:01:36.964338
+2	11	3000	1	3000	2022-02-18 16:01:36.967933
+3	10	3000	1	3000	2022-02-18 20:19:11.102375
+5	10	3000	1	3000	2022-02-18 20:20:44.444725
+6	10	3000	1	3000	2022-02-18 20:27:38.45798
+8	10	3000	1	3000	2022-02-18 20:34:13.364432
+7	10	3000	1	3000	2022-02-18 20:30:04.519458
+9	10	3000	1	3000	2022-02-18 20:37:55.997321
+9	11	3000	2	6000	2022-02-18 20:37:55.997321
+10	10	3000	3	9000	2022-02-19 08:25:21.154346
+11	10	3000	3	9000	2022-02-19 08:30:40.060627
+12	10	3000	3	9000	2022-02-19 08:33:22.266277
+13	10	3000	3	9000	2022-02-19 08:34:34.368275
+14	10	3000	3	9000	2022-02-19 08:42:54.589214
+15	10	3000	3	9000	2022-02-19 08:46:11.978265
+16	10	3000	3	9000	2022-02-19 18:04:50.837126
+17	10	3000	3	9000	2022-02-19 18:06:45.850491
+18	10	3000	3	9000	2022-02-19 20:27:28.366869
+19	10	3000	3	9000	2022-02-21 10:24:29.59892
+\.
+
+
+--
+-- Data for Name: buys; Type: TABLE DATA; Schema: public; Owner: bucketeer
+--
+
+COPY public.buys (id, id_user, item_amount, price_amount, created_at) FROM stdin;
+2	7	2	6000	2022-02-18 13:50:36.428
+1	1	3	9000	2022-02-17 20:26:26.445
+4	1	1	3000	2022-02-18 20:20:44.438018
+5	1	1	3000	2022-02-18 20:26:29.570779
+6	1	1	3000	2022-02-18 20:27:38.446822
+7	1	1	3000	2022-02-18 20:30:04.513968
+8	1	1	3000	2022-02-18 20:34:13.359289
+9	1	3	9000	2022-02-18 20:37:55.993259
+10	1	3	9000	2022-02-19 08:25:21.147102
+11	1	3	9000	2022-02-19 08:30:40.057254
+12	1	3	9000	2022-02-19 08:33:22.26314
+13	1	3	9000	2022-02-19 08:34:34.365018
+14	1	3	9000	2022-02-19 08:42:54.585257
+15	1	3	9000	2022-02-19 08:46:11.974533
+16	1	3	9000	2022-02-19 18:04:50.830444
+17	1	3	9000	2022-02-19 18:06:45.847273
+18	1	3	9000	2022-02-19 20:27:28.363336
+19	1	3	9000	2022-02-21 10:24:29.577135
+\.
+
+
+--
+-- Data for Name: items; Type: TABLE DATA; Schema: public; Owner: bucketeer
+--
+
+COPY public.items (id, name, description, created_at, price) FROM stdin;
+3	Extra Jos	Minuman energi	2022-02-09 14:31:46.318347	3000
+4	Marimas	Minuman instan berbagai rasa	2022-02-09 17:50:31.10336	3000
+5	White Coffee	Bebas asam lambung	2022-02-09 17:51:18.28965	3000
+6	Kapal Api Hitam	Kopi hitam panas	2022-02-09 17:52:11.187846	3000
+8	Torabika Kopi Susu	Kopi susu panas	2022-02-10 19:11:30.307	3000
+10	Chocolatos	Minuman rasa coklat	2022-02-10 20:26:51.450382	3000
+11	Soda Gembira	Campuran soda dan susu	2022-02-10 22:35:21.730681	3000
+12	Susu Coklat	Bisa dingin atau panas	2022-02-10 22:35:51.548484	3000
+14	Susu Putih	Bisa dingin atau panas	2022-02-11 09:37:21.69567	3000
+16	Nutrisari	Minuman instan rasa buah	2022-02-14 16:31:15.055059	3000
+17	Goodday	Kopi berbagai rasa	2022-02-14 16:35:47.047491	3000
+20	Es Teh	Minuman teh dingin	2022-02-15 11:25:18.299851	3000
+15	Sprite	Minuman karbonasi	2022-02-14 15:24:36.517158	3000
+18	Fanta	Minuman karbonasi	2022-02-14 16:36:02.242189	3000
+21	Es Jeruk	Minuman jeruk peras	2022-02-15 11:57:02.962085	3000
+22	Jus Buah	Minuman jus aneka buah	2022-02-15 11:57:54.444529	3000
+23	Kopi Klotok	Kopi panas dengan baraapi	2022-02-15 11:58:55.451151	3000
+24	Wedang Jahe	Minuman jahe panas	2022-02-15 11:59:13.122721	3000
+25	Wedang Uwuh	Minuman herbal rempah rempah	2022-02-15 11:59:31.659986	3000
+26	Susu Dancow	Minuman susu dancow aneka rasa	2022-02-15 12:00:11.169082	3000
+27	Hemaviton	Minuman energi	2022-02-15 12:00:30.945828	3000
+28	Le Mineral	Minuman air kemasan	2022-02-15 12:01:09.985871	3000
+29	Aqua	Minuman air kemasan	2022-02-15 12:01:16.132359	3000
+30	Oky Jelly	Minuman kemasan	2022-02-15 12:01:48.233855	3000
+31	Ale Ale	Minuman kemasan	2022-02-15 12:02:41.688283	3000
+32	Milo	MInuman rasa cokelat	2022-02-16 10:37:49.730576	3000
+33	Ovaltine	Minuman rasa cokelat	2022-02-16 10:40:19.77092	3000
+35	Es Sirup	Minuman dingin	2022-02-17 21:11:44.311784	3000
+\.
+
+
+--
+-- Data for Name: logins; Type: TABLE DATA; Schema: public; Owner: bucketeer
+--
+
+COPY public.logins (id, id_user, username, password, created_at, update_at, token) FROM stdin;
+2	5	fahri	fahri123	2022-02-22 16:25:19.769956	2022-02-22 16:25:19.769956	\N
+1	1	bambang	bambang123	2022-02-22 16:20:19.769	2022-02-22 16:20:19.769	\N
+3	6	alex	alex123	2022-02-22 16:27:34.497349	2022-02-22 16:27:34.497349	\N
+4	7	alan	alan123	2022-02-22 16:28:20.724623	2022-02-22 16:28:20.724623	\N
+5	8	rafiq	rafiq123	2022-02-22 16:28:49.058728	2022-02-22 16:28:49.058728	\N
+6	9	rio	rio123	2022-02-22 16:29:36.723986	2022-02-22 16:29:36.723986	\N
+7	10	rama	rama123	2022-02-22 16:29:36.723986	2022-02-22 16:29:36.723986	\N
+8	11	mars	mars123	2022-02-22 16:31:00.566449	2022-02-22 16:31:00.566449	\N
+9	12	dummy	dummy	2022-02-22 16:31:22.905199	2022-02-22 16:31:22.905199	\N
+\.
+
+
+--
+-- Data for Name: schema_migrations; Type: TABLE DATA; Schema: public; Owner: bucketeer
+--
+
+COPY public.schema_migrations (version, dirty) FROM stdin;
+1	f
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: bucketeer
+--
+
+COPY public.users (id, name, age, status, created_at) FROM stdin;
+1	Bambang	23	Lajang	2022-02-14 07:07:12
+6	Alex	28	Menikah	2022-02-16 16:58:09.345274
+7	Alan	26	Lajang	2022-02-16 17:02:13.179938
+8	Rafiq	29	Menikah	2022-02-16 17:03:51.118481
+9	Rio	29	Menikah	2022-02-16 17:03:55.699836
+10	Rama	27	Lajang	2022-02-16 17:05:29.809505
+11	Mars	30	Lajang	2022-02-17 11:31:43.514518
+12	Dummy	100	ForDelete	2022-02-17 11:42:03.616794
+5	Fahri	19	Lajang	2022-02-14 15:21:31.473545
+\.
+
+
+--
+-- Name: buys_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bucketeer
+--
+
+SELECT pg_catalog.setval('public.buys_id_seq', 19, true);
+
+
+--
+-- Name: items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bucketeer
+--
+
+SELECT pg_catalog.setval('public.items_id_seq', 35, true);
+
+
+--
+-- Name: logins_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bucketeer
+--
+
+SELECT pg_catalog.setval('public.logins_id_seq', 10, true);
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: bucketeer
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 13, true);
+
+
+--
+-- Name: items items_pkey; Type: CONSTRAINT; Schema: public; Owner: bucketeer
+--
+
+ALTER TABLE ONLY public.items
+    ADD CONSTRAINT items_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: logins logins_id_user_key; Type: CONSTRAINT; Schema: public; Owner: bucketeer
+--
+
+ALTER TABLE ONLY public.logins
+    ADD CONSTRAINT logins_id_user_key UNIQUE (id_user);
+
+
+--
+-- Name: logins logins_username_key; Type: CONSTRAINT; Schema: public; Owner: bucketeer
+--
+
+ALTER TABLE ONLY public.logins
+    ADD CONSTRAINT logins_username_key UNIQUE (username);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: bucketeer
+--
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- PostgreSQL database dump complete
+--
+

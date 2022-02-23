@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"gochicoba/helpers"
 	"gochicoba/models"
 	"net/http"
 	"os"
@@ -13,13 +14,15 @@ func CheckToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("Authorization")
 		if token == "" {
-			w.Write([]byte(`empty authorization`))
+			// w.Write([]byte(`empty authorization`))
+			helpers.ErrorResponse(w, r, http.StatusUnauthorized, "failed", "empty authorization")
 			return
 		}
 
 		splitToken := strings.Split(token, " ")
 		if splitToken[1] == "" {
-			w.Write([]byte(`empty token`))
+			// w.Write([]byte(`empty token`))
+			helpers.ErrorResponse(w, r, http.StatusUnauthorized, "failed", "empty token")
 			return
 		}
 
@@ -30,11 +33,13 @@ func CheckToken(next http.Handler) http.Handler {
 		})
 
 		if jwtToken.Raw != splitToken[1] {
-			w.Write([]byte(`invalid token is different`))
+			// w.Write([]byte(`invalid token is different`))
+			helpers.ErrorResponse(w, r, http.StatusUnauthorized, "failed", "invalid token")
 			return
 		}
 		if err != nil {
-			w.Write([]byte(err.Error()))
+			// w.Write([]byte(err.Error()))
+			helpers.ErrorResponse(w, r, http.StatusUnauthorized, "failed", err.Error())
 			return
 		}
 
