@@ -41,6 +41,8 @@ func BuyHandler(db *gorm.DB) handler.BuyHandler {
 }
 
 func LoginHandler(db *gorm.DB) handler.LoginHandler {
-	loginHandler := handler.NewLoginHandler()
+	loginRepository := repository.NewLoginRepository(db)
+	loginService := service.NewLoginService(loginRepository)
+	loginHandler := handler.NewLoginHandler(loginService)
 	return loginHandler
 }

@@ -23,7 +23,10 @@ func Authentication(r *http.Request) error {
 
 	claim := &models.Claims{}
 
-	jwtToken, err := jwt.ParseWithClaims(splitToken[1], claim, func(t *jwt.Token) (interface{}, error) { return []byte(os.Getenv("SECRET_KEY")), nil })
+	jwtToken, err := jwt.ParseWithClaims(splitToken[1], claim, func(t *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+
 	if jwtToken.Raw != splitToken[1] {
 		return errors.New("invalid token is different")
 	}

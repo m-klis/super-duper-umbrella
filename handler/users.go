@@ -21,11 +21,11 @@ func NewUserHandler(userService service.UserService) UserHandler {
 }
 
 func (ih *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	err := helpers.Authentication(r)
-	if err != nil {
-		helpers.ErrorResponse(w, r, http.StatusUnauthorized, "unauthorized", err.Error())
-		return
-	}
+	// err := helpers.Authentication(r)
+	// if err != nil {
+	// 	helpers.ErrorResponse(w, r, http.StatusUnauthorized, "unauthorized", err.Error())
+	// 	return
+	// }
 	name := r.URL.Query().Get("name")
 	ageup := r.URL.Query().Get("ageup")
 	agedown := r.URL.Query().Get("agedown")

@@ -28,7 +28,7 @@ func BuyHandler(db *gorm.DB) handler.BuyHandler {
 }
 
 func LoginHandler(db *gorm.DB) handler.LoginHandler {
-	wire.Build(handler.NewLoginHandler)
+	wire.Build(repository.NewLoginRepository, service.NewLoginService, handler.NewLoginHandler)
 	return handler.LoginHandler{}
 }
 

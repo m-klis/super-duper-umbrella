@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"gochicoba/helpers"
 	"gochicoba/models"
+	"gochicoba/service"
 	"net/http"
 	"os"
 	"time"
@@ -12,19 +13,24 @@ import (
 )
 
 type LoginHandler struct {
+	loginService service.LoginService
 }
 
-func NewLoginHandler() LoginHandler {
-	return LoginHandler{}
+func NewLoginHandler(loginService service.LoginService) LoginHandler {
+	return LoginHandler{
+		loginService: loginService,
+	}
 }
 
 func (lh *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var creds models.Credentials
 	jwtKey := os.Getenv("SECRET_KEY")
-	var users = map[string]string{
-		"user1": "password1",
-		"user2": "password2",
-	}
+	// var users models.Login
+
+	// var users = map[string]string{
+	// 	"user1": "password1",
+	// 	"user2": "password2",
+	// }
 
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
@@ -32,10 +38,9 @@ func (lh *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expectedPassword, ok := users[creds.Username]
-
-	if !ok || expectedPassword != creds.Password {
-		w.WriteHeader(http.StatusUnauthorized)
+	err = lh.loginService.CheckLogin(creds)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusUnauthorized, "login failed", err.Error())
 		return
 	}
 
@@ -53,12 +58,6 @@ func (lh *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
-
-	// http.SetCookie(w, &http.Cookie{
-	// 	Name:    "token",
-	// 	Value:   tokenString,
-	// 	Expires: expirationTime,
-	// })
 
 	res := models.LoginResponse{
 		Name:    "token",

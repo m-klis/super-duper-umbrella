@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gochicoba/db"
 	"gochicoba/handler"
+	"gochicoba/handler/middlewares"
 	"log"
 	"net/http"
 	"os"
@@ -54,6 +55,7 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 	ih := ItemHandler(db)
 
 	router.Route("/items", func(router chi.Router) {
+		router.Use(middlewares.CheckToken)
 		router.Get("/", ih.GetAllItems)
 		router.Post("/", ih.CreateItem)
 		router.Route("/{itemID}", func(router chi.Router) {
@@ -67,6 +69,7 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 	uh := UserHandler(db)
 
 	router.Route("/users", func(router chi.Router) {
+		router.Use(middlewares.CheckToken)
 		router.Get("/", uh.GetAllUsers)
 		router.Post("/", uh.CreateUser)
 		router.Route("/{userID}", func(router chi.Router) {
@@ -79,6 +82,7 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 	ub := BuyHandler(db)
 
 	router.Route("/buys", func(router chi.Router) {
+		router.Use(middlewares.CheckToken)
 		router.Get("/", ub.GetAllBuys)
 		router.Post("/", ub.CreateBuy)
 		router.Route("/transaction", func(router chi.Router) {
