@@ -44,7 +44,6 @@ func (bh *BuyHandler) GetAllBuys(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.CustomResponse(w, r, http.StatusOK, "success", response)
-	return
 }
 
 func (bh *BuyHandler) CreateBuy(w http.ResponseWriter, r *http.Request) {
