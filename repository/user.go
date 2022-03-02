@@ -49,7 +49,7 @@ func (ur *userRepository) GetAllUsers(uf models.UserFilter) (userList []*models.
 }
 
 func (ur *userRepository) GetUser(id int) (user *models.User, err error) {
-	query := ur.db
+	query := ur.db.Debug()
 	err = query.Where("id = ?", id).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -62,7 +62,7 @@ func (ur *userRepository) GetUser(id int) (user *models.User, err error) {
 }
 
 func (ur *userRepository) AddUser(userData *models.User) (*models.User, error) {
-	query := ur.db
+	query := ur.db.Debug()
 	err := query.Create(&userData).Error
 	//fmt.Println(item)
 	if err != nil {
@@ -72,7 +72,7 @@ func (ur *userRepository) AddUser(userData *models.User) (*models.User, error) {
 }
 
 func (ur *userRepository) UpdateUser(userId int, userData *models.User) (user *models.User, err error) {
-	query := ur.db
+	query := ur.db.Debug()
 	//field := &itemData
 	err = query.Model(&userData).Where("id", userId).Updates(&userData).Error
 	if err != nil {
@@ -89,7 +89,7 @@ func (ur *userRepository) UpdateUser(userId int, userData *models.User) (user *m
 }
 
 func (ur *userRepository) DeleteUser(userId int) error {
-	query := ur.db
+	query := ur.db.Debug()
 	var user *models.User
 	err := query.Where("id = ?", userId).First(&user).Error
 	if err != nil {
