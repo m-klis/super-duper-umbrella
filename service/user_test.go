@@ -17,7 +17,7 @@ type UserRepoMock struct {
 func (urm *UserRepoMock) GetAllUsers(uf models.UserFilter) ([]*models.User, error) {
 	arg := urm.Called(uf)
 	if arg.Get(0) == nil {
-		return arg.Get(0).([]*models.User), nil
+		return nil, arg.Error(1)
 	}
 	return arg.Get(0).([]*models.User), nil
 }
@@ -25,7 +25,7 @@ func (urm *UserRepoMock) GetAllUsers(uf models.UserFilter) ([]*models.User, erro
 func (urm *UserRepoMock) GetUser(iu int) (*models.User, error) {
 	arg := urm.Called(iu)
 	if arg.Get(0) == nil {
-		return nil, errors.New("wrong id user")
+		return nil, arg.Error(1)
 	}
 	usr := arg.Get(0).(*models.User)
 	return usr, nil
@@ -34,7 +34,7 @@ func (urm *UserRepoMock) GetUser(iu int) (*models.User, error) {
 func (urm *UserRepoMock) AddUser(mu *models.User) (*models.User, error) {
 	args := urm.Called(mu)
 	if args.Get(0) == nil {
-		return nil, errors.New("wrong id user")
+		return nil, args.Error(1)
 	}
 	usr := args.Get(0).(*models.User)
 	return usr, nil
@@ -81,22 +81,41 @@ var user = models.User{
 	CreatedAt: time.Now(),
 }
 
-var userFil = models.UserFilter{
-	Name:    "",
-	AgeUp:   0,
-	AgeDown: 30,
-	Status:  "",
-}
-
 func TestUserService_GetAllUsers(t *testing.T) {
 	var userRepo = &UserRepoMock{Mock: mock.Mock{}}
 	var userServ = userService{userRepo: userRepo}
+
+	var userFil = models.UserFilter{
+		Name:    "",
+		AgeUp:   0,
+		AgeDown: 30,
+		Status:  "",
+	}
 
 	userRepo.Mock.On("GetAllUsers", userFil).Return(sliceUser, nil)
 	usr, err := userServ.GetAllUsers(userFil)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, usr)
+}
+
+func TestUserService_GetAllUsersFail(t *testing.T) {
+	var userRepo = &UserRepoMock{Mock: mock.Mock{}}
+	var userServ = userService{userRepo: userRepo}
+
+	var userFil = models.UserFilter{
+		Name:    "",
+		AgeUp:   0,
+		AgeDown: 30,
+		Status:  "",
+	}
+
+	userRepo.Mock.On("GetAllUsers", userFil).Return(nil, errors.New("failed get data"))
+	usr, err := userServ.GetAllUsers(userFil)
+
+	assert.Nil(t, usr)
+	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 func TestUserService_GetUser(t *testing.T) {
@@ -218,5 +237,26 @@ func TestUserService_UpdateUser(t *testing.T) {
 
 	assert.Nil(t, err, "error must be nil")
 	assert.Equal(t, newuser.Name, res.Name)
+
+}
+
+func TestUserService_UpdateUserFail(t *testing.T) {
+	var userRepo = &UserRepoMock{Mock: mock.Mock{}}
+	var userServ = userService{userRepo: userRepo}
+
+	newuser1 := models.User{
+		ID:        1,
+		Name:      "First",
+		Age:       24,
+		Status:    "First",
+		CreatedAt: time.Now(),
+	}
+
+	userRepo.Mock.On("UpdateUser", 2, &newuser1).Return(nil, errors.New("id not match"))
+
+	res, err := userServ.UpdateUser(2, &newuser1)
+
+	assert.Error(t, err, "must return error")
+	assert.Nil(t, res, "must return nil")
 
 }
