@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"gochicoba/models"
 
 	"gorm.io/gorm"
@@ -27,7 +28,7 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 
 func (ur *userRepository) GetAllUsers(uf models.UserFilter) (userList []*models.User, err error) {
 	var list []*models.User
-	query := ur.db.Debug()
+	query := ur.db
 
 	if uf.Name != "" {
 		query = query.Where("name LIKE ?", "%"+uf.Name+"%")
@@ -49,7 +50,7 @@ func (ur *userRepository) GetAllUsers(uf models.UserFilter) (userList []*models.
 }
 
 func (ur *userRepository) GetUser(id int) (user *models.User, err error) {
-	query := ur.db.Debug()
+	query := ur.db
 	err = query.Where("id = ?", id).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -62,17 +63,18 @@ func (ur *userRepository) GetUser(id int) (user *models.User, err error) {
 }
 
 func (ur *userRepository) AddUser(userData *models.User) (*models.User, error) {
-	query := ur.db.Debug()
+	query := ur.db
 	err := query.Create(&userData).Error
 	//fmt.Println(item)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(userData.ID)
 	return userData, nil
 }
 
 func (ur *userRepository) UpdateUser(userId int, userData *models.User) (user *models.User, err error) {
-	query := ur.db.Debug()
+	query := ur.db
 	//field := &itemData
 	err = query.Model(&userData).Where("id", userId).Updates(&userData).Error
 	if err != nil {
@@ -89,7 +91,7 @@ func (ur *userRepository) UpdateUser(userId int, userData *models.User) (user *m
 }
 
 func (ur *userRepository) DeleteUser(userId int) error {
-	query := ur.db.Debug()
+	query := ur.db
 	var user *models.User
 	err := query.Where("id = ?", userId).First(&user).Error
 	if err != nil {

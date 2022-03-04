@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"gochicoba/db"
 	"gochicoba/models"
 	"log"
@@ -44,7 +43,7 @@ func NewMockRepo() (*gorm.DB, sqlmock.Sqlmock) {
 	return dbGorm, mock
 }
 
-func TestGetAllUsersRepo(t *testing.T) {
+func TestUserRepository_GetAllUsers(t *testing.T) {
 	db, mock := NewMockRepo()
 	repo := &userRepository{db}
 
@@ -69,9 +68,11 @@ func TestGetAllUsersRepo(t *testing.T) {
 	assert.NotEmpty(t, results)
 	assert.NoError(t, err)
 	assert.Len(t, results, 2)
+	assert.Equal(t, *results[0], users[0])
+	assert.Equal(t, results[1], &users[1])
 }
 
-func TestGetUserRepo(t *testing.T) {
+func TestUserRespository_GetUser(t *testing.T) {
 	db, mock := NewMockRepo()
 	repo := &userRepository{db}
 
@@ -95,75 +96,70 @@ func TestGetUserRepo(t *testing.T) {
 	assert.NotEmpty(t, result)
 	assert.NoError(t, err)
 	assert.Equal(t, &user, result)
+	assert.Equal(t, user.ID, result.ID)
+	assert.Equal(t, user.Name, result.Name)
+	assert.Equal(t, user.Status, result.Status)
 }
 
-func TestAddUserRepo(t *testing.T) {
-	db, mock := NewMockRepo()
-	repo := &userRepository{db}
+// func TestAddUserRepo(t *testing.T) {
+// 	db, mock := NewMockRepo()
+// 	repo := &userRepository{db}
 
-	var user models.User = models.User{
-		ID:        1,
-		Name:      "First",
-		Age:       19,
-		Status:    "First",
-		CreatedAt: time.Time{},
-	}
+// 	var user models.User = models.User{
+// 		ID:        1,
+// 		Name:      "First",
+// 		Age:       19,
+// 		Status:    "First",
+// 		CreatedAt: time.Time{},
+// 	}
 
-	// query := `INSERT INTO "users" ("name","age","status") VALUES ($1,$2,$3)`
-	// query := `INSERT INTO "users" (.+) RETURNING`
+// 	mock.ExpectQuery(`INSERT INTO "users" (.+) RETURNING`).WithArgs(sqlmock.AnyArg(), user.Name, user.Age, user.Status).WillReturnRows(sqlmock.NewRows([]string{"id", "name", "age", "status", "created_at"}).AddRow(user.ID, user.Name, user.Age, user.Status, user.CreatedAt))
 
-	// rows := sqlmock.NewRows([]string{"id", "name", "age", "status", "created_at"}).
-	// 	AddRow(user.ID, user.Name, user.Age, user.Status, user.CreatedAt)
+// 	result, err := repo.AddUser(&models.User{
+// 		Name:   "First",
+// 		Age:    19,
+// 		Status: "First",
+// 	})
 
-	// mock.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(sqlmock.AnyArg(), user.Name, user.Age, user.Status).WillReturnRows(rows)
+// 	fmt.Println(result)
+// 	fmt.Println("Hallo")
+// 	fmt.Println(err)
 
-	mock.ExpectQuery(`INSERT INTO "users" (.+) RETURNING`).WithArgs(sqlmock.AnyArg(), user.Name, user.Age, user.Status).WillReturnRows(sqlmock.NewRows([]string{"id", "name", "age", "status", "created_at"}).AddRow(user.ID, user.Name, user.Age, user.Status, user.CreatedAt))
+// 	assert.NotEmpty(t, result)
+// 	assert.NoError(t, err)
+// 	assert.Equal(t, &user, result)
+// }
 
-	result, err := repo.AddUser(&models.User{
-		Name:   "First",
-		Age:    19,
-		Status: "First",
-	})
+// func TestUpdateUserRepo(t *testing.T) {
+// 	db, mock := NewMockRepo()
+// 	repo := &userRepository{db}
 
-	fmt.Println(result)
-	fmt.Println("Hallo")
-	fmt.Println(err)
+// 	// mock.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(sqlmock.AnyArg(), user.Name, user.Age, user.Status).WillReturnRows(rows)
 
-	// assert.NotEmpty(t, result)
-	// assert.NoError(t, err)
-	// assert.Equal(t, &user, result)
-}
+// 	fmt.Println(mock)
+// 	fmt.Println(repo)
+// }
 
-func TestUpdateUserRepo(t *testing.T) {
-	db, mock := NewMockRepo()
-	repo := &userRepository{db}
+// func TestDeleteUserRepo(t *testing.T) {
+// 	db, mock := NewMockRepo()
+// 	repo := &userRepository{db}
 
-	// mock.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(sqlmock.AnyArg(), user.Name, user.Age, user.Status).WillReturnRows(rows)
+// 	query := `DELETE FROM "users" WHERE id = $1`
+// 	mock.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(1).WillReturnError(nil)
 
-	fmt.Println(mock)
-	fmt.Println(repo)
-}
+// 	err := repo.DeleteUser(1)
 
-func TestDeleteUserRepo(t *testing.T) {
-	db, mock := NewMockRepo()
-	repo := &userRepository{db}
+// 	fmt.Println("Hallo")
+// 	fmt.Println(err)
 
-	query := `DELETE FROM "users" WHERE id = $1`
-	mock.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(1).WillReturnError(nil)
-
-	err := repo.DeleteUser(1)
-
-	fmt.Println("Hallo")
-	fmt.Println(err)
-
-	assert.Error(t, err) // ada error
-}
+// 	assert.Error(t, err)
+// }
 
 /////////////////////////////////////////////
 /////////// REAL DATABASE SECTION ///////////
 /////////////////////////////////////////////
 
-func TestDeleteUserRepoReal(t *testing.T) {
+func TestUserRepositoryReal_DeleteUser(t *testing.T) {
 	db := db.DatabaseInitialize()
 	repo := &userRepository{db: db}
 
@@ -172,7 +168,7 @@ func TestDeleteUserRepoReal(t *testing.T) {
 	assert.Error(t, err, "Harusnya Error")
 }
 
-func TestCreateDeleteRepoReal(t *testing.T) {
+func TestUserRepositoryReal_CreateDeleteUser(t *testing.T) {
 	db := db.DatabaseInitialize()
 	repo := &userRepository{db: db}
 
@@ -190,4 +186,95 @@ func TestCreateDeleteRepoReal(t *testing.T) {
 	err = repo.DeleteUser(res.ID)
 
 	assert.Nil(t, err, "Error must be nil")
+}
+
+func TestUserRepositoryReal_GetAllUsers_FilterNameNoExist(t *testing.T) {
+	db := db.DatabaseInitialize()
+	repo := &userRepository{db: db}
+
+	res, err := repo.GetAllUsers(models.UserFilter{
+		Name:    "Zahra",
+		AgeUp:   0,
+		AgeDown: 0,
+		Status:  "",
+	})
+
+	// fmt.Println(res)
+	assert.NotNil(t, res, "must be not nil")
+	assert.Nil(t, err, "must be nil")
+	assert.Equal(t, 0, len(res), "data not found")
+
+	res, err = repo.GetAllUsers(models.UserFilter{
+		Name:    "",
+		AgeUp:   0,
+		AgeDown: 0,
+		Status:  "",
+	})
+
+	assert.NotNil(t, res)
+	assert.Nil(t, err)
+
+}
+
+func TestUserRepositoryReal_GetAllUsers_FilterAge(t *testing.T) {
+	db := db.DatabaseInitialize()
+	repo := &userRepository{db: db}
+
+	res, err := repo.GetAllUsers(models.UserFilter{
+		Name:    "",
+		AgeUp:   30,
+		AgeDown: 10,
+		Status:  "",
+	})
+
+	assert.Nil(t, err)
+	assert.NotNil(t, res)
+
+	for i := range res {
+		var actual = res[i].Age >= 10 && res[i].Age <= 30
+		assert.Equal(t, true, actual)
+	}
+}
+
+func TestUserRepositoryReal_GetAllUsers_FilterStatus(t *testing.T) {
+	db := db.DatabaseInitialize()
+	repo := &userRepository{db: db}
+
+	res, err := repo.GetAllUsers(models.UserFilter{
+		Name:    "",
+		AgeUp:   0,
+		AgeDown: 0,
+		Status:  "First",
+	})
+
+	assert.Nil(t, err)
+	assert.NotNil(t, res)
+
+	for i := range res {
+		assert.Equal(t, "First", res[i].Status)
+	}
+
+}
+
+func TestUserRepositoryReal_UpdateUser(t *testing.T) {
+	db := db.DatabaseInitialize()
+	repo := &userRepository{db: db}
+
+	var userData = &models.User{
+		ID:        1,
+		Name:      "First",
+		Age:       100,
+		Status:    "First",
+		CreatedAt: time.Now(),
+	}
+
+	res, err := repo.UpdateUser(userData.ID, userData)
+
+	assert.Nil(t, err, "error must nil")
+	assert.NotNil(t, res, "res must not nil")
+	assert.Equal(t, userData.ID, res.ID)
+	assert.Equal(t, userData.Name, res.Name)
+	assert.Equal(t, userData.Age, res.Age)
+	assert.Equal(t, userData.Status, res.Status)
+	assert.Equal(t, userData.CreatedAt, res.CreatedAt)
 }

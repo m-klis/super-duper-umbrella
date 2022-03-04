@@ -94,6 +94,7 @@ func TestUserService_GetAllUsers(t *testing.T) {
 
 	userRepo.Mock.On("GetAllUsers", userFil).Return(sliceUser, nil)
 	usr, err := userServ.GetAllUsers(userFil)
+	userRepo.Mock.AssertExpectations(t)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, usr)
@@ -112,6 +113,7 @@ func TestUserService_GetAllUsersFail(t *testing.T) {
 
 	userRepo.Mock.On("GetAllUsers", userFil).Return(nil, errors.New("failed get data"))
 	usr, err := userServ.GetAllUsers(userFil)
+	userRepo.Mock.AssertExpectations(t)
 
 	assert.Nil(t, usr)
 	assert.NotNil(t, err)
@@ -124,6 +126,7 @@ func TestUserService_GetUser(t *testing.T) {
 
 	userRepo.Mock.On("GetUser", 1).Return(&user, nil)
 	usr, err := userServ.GetUser(1)
+	userRepo.Mock.AssertExpectations(t)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, usr)
@@ -136,6 +139,7 @@ func TestUserService_GetUserNotFound(t *testing.T) {
 	er := errors.New("user not found")
 	userRepo.Mock.On("GetUser", 2).Return(nil, er)
 	userr, err := userServ.GetUser(2)
+	userRepo.Mock.AssertExpectations(t)
 
 	assert.Nil(t, userr)
 	assert.NotNil(t, err)
@@ -146,8 +150,8 @@ func TestUserService_AddUser(t *testing.T) {
 	var userServ = userService{userRepo: userRepo}
 
 	userRepo.Mock.On("AddUser", &user).Return(&user, nil)
-
 	userr, err := userServ.AddUser(&user)
+	userRepo.Mock.AssertExpectations(t)
 
 	assert.Nil(t, err, "Error must be nill")
 	assert.Equal(t, &user, userr)
@@ -166,8 +170,8 @@ func TestUserService_AddUserFail(t *testing.T) {
 	}
 	erro := errors.New("data exits")
 	userRepo.Mock.On("AddUser", &newuser).Return(nil, erro)
-
 	userr, err := userServ.AddUser(&newuser)
+	userRepo.Mock.AssertExpectations(t)
 
 	assert.NotNil(t, err, "must error")
 	assert.Nil(t, userr, "must nil")
@@ -186,8 +190,8 @@ func TestUserService_DeleteUser(t *testing.T) {
 	}
 
 	userRepo.Mock.On("DeleteUser").Return(nil)
-
 	err := userServ.DeleteUser(newuser.ID)
+	userRepo.Mock.AssertExpectations(t)
 
 	assert.Nil(t, err, "err must be nil")
 }
@@ -205,8 +209,8 @@ func TestUserService_DeleteUserFail(t *testing.T) {
 	}
 
 	userRepo.Mock.On("DeleteUser").Return(errors.New("wrong id"))
-
 	err := userServ.DeleteUser(newuser.ID)
+	userRepo.Mock.AssertExpectations(t)
 
 	assert.Error(t, err, "must be error")
 }
@@ -232,8 +236,8 @@ func TestUserService_UpdateUser(t *testing.T) {
 	}
 
 	userRepo.Mock.On("UpdateUser", newuser.ID, &newuser1).Return(&newuser, nil)
-
 	res, err := userServ.UpdateUser(newuser.ID, &newuser1)
+	userRepo.Mock.AssertExpectations(t)
 
 	assert.Nil(t, err, "error must be nil")
 	assert.Equal(t, newuser.Name, res.Name)
@@ -253,8 +257,8 @@ func TestUserService_UpdateUserFail(t *testing.T) {
 	}
 
 	userRepo.Mock.On("UpdateUser", 2, &newuser1).Return(nil, errors.New("id not match"))
-
 	res, err := userServ.UpdateUser(2, &newuser1)
+	userRepo.Mock.AssertExpectations(t)
 
 	assert.Error(t, err, "must return error")
 	assert.Nil(t, res, "must return nil")

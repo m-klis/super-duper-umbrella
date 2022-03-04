@@ -18,7 +18,7 @@ func ConvertMonth(t time.Time) string {
 	case "02":
 		b = " Februari "
 	case "03":
-		b = " Maret"
+		b = " Maret "
 	case "04":
 		b = " April "
 	case "05":
@@ -34,7 +34,7 @@ func ConvertMonth(t time.Time) string {
 	case "10":
 		b = " Oktober "
 	case "11":
-		b = " November"
+		b = " November "
 	case "12":
 		b = " Desember "
 	}
