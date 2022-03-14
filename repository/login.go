@@ -43,11 +43,3 @@ func (lr *loginRepository) CheckLogin(mc models.Credentials) error {
 
 	return nil
 }
-
-// err = query.Where("id = ?", id).First(&user).Error
-// 	if err != nil {
-// 		if errors.Is(err, gorm.ErrRecordNotFound) {
-// 			return nil, nil
-// 		}
-// 		return nil, err
-// 	}

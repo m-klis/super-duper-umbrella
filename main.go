@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"gochicoba/db"
+	_ "gochicoba/docs"
 	"gochicoba/handler"
 	"gochicoba/handler/middlewares"
 	"log"
@@ -16,6 +17,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/joho/godotenv"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"gorm.io/gorm"
 )
 
@@ -25,6 +27,21 @@ func init() {
 		log.Fatal("Error loading .env file")
 	}
 }
+
+// @title Swagger Example API
+// @version 1.0
+// @description This is a sample server Bucketeer server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8081
+// @BasePath /
 
 func main() {
 	database := db.DatabaseInitialize()
@@ -47,6 +64,8 @@ func main() {
 }
 
 func InitializeRoute(db *gorm.DB) http.Handler {
+	addr := os.Getenv("APP_PORT")
+
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.MethodNotAllowed(handler.MethodNotAllowedHandler)
@@ -95,6 +114,10 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 	router.Route("/login", func(router chi.Router) {
 		router.Post("/", lh.Login)
 	})
+
+	router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:"+addr+"/swagger/doc.json"),
+	))
 
 	return router
 }

@@ -13,6 +13,8 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.4
 	github.com/stretchr/testify v1.7.0
+	github.com/swaggo/http-swagger v1.2.5
+	github.com/swaggo/swag v1.8.0
 	gorm.io/driver/postgres v1.2.3
 	gorm.io/gorm v1.22.5
 	gotest.tools v2.2.0+incompatible

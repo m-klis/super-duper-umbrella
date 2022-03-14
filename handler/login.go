@@ -25,12 +25,6 @@ func NewLoginHandler(loginService service.LoginService) LoginHandler {
 func (lh *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var creds models.Credentials
 	jwtKey := os.Getenv("SECRET_KEY")
-	// var users models.Login
-
-	// var users = map[string]string{
-	// 	"user1": "password1",
-	// 	"user2": "password2",
-	// }
 
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
