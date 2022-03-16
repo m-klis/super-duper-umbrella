@@ -22,6 +22,19 @@ func NewLoginHandler(loginService service.LoginService) LoginHandler {
 	}
 }
 
+// LOGIN APP
+// @Summary      For Login to API
+// @Description  Login first for authorization (Bearer Authorization)
+// @Description  Copy token value, then add to field authorization with format
+// @Description  Example :
+// @Description  Bearer ABCDEFGHIJKLMN.1234567890.XXX
+// @Tags         LOGIN
+// @Accept       json
+// @Produce      json
+// @Param note body models.Credentials true "Login"
+// @Success      200  {object}  helpers.Response
+// @Failure      500  {object}  helpers.Response
+// @Router       /login [post]
 func (lh *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var creds models.Credentials
 	jwtKey := os.Getenv("SECRET_KEY")

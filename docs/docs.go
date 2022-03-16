@@ -24,7 +24,101 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {}
+    "paths": {
+        "/items/": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get items",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ITEM"
+                ],
+                "summary": "Show all data Items",
+                "responses": {}
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "Login first for authorization (Bearer Authorization)\nCopy token value, then add to field authorization with format\nExample :\nBearer ABCDEFGHIJKLMN.1234567890.XXX",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "LOGIN"
+                ],
+                "summary": "For Login to API",
+                "parameters": [
+                    {
+                        "description": "Login",
+                        "name": "note",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Credentials"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "helpers.Response": {
+            "type": "object",
+            "properties": {
+                "count": {},
+                "data": {},
+                "error": {},
+                "message": {},
+                "statusCode": {
+                    "type": "integer"
+                },
+                "total": {}
+            }
+        },
+        "models.Credentials": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "dummy"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "dummy"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it

@@ -7,8 +7,8 @@ import (
 )
 
 type Credentials struct {
-	Password string `json:"password"`
-	Username string `json:"username"`
+	Password string `json:"password" example:"dummy"`
+	Username string `json:"username" example:"dummy"`
 }
 
 type Claims struct {

@@ -43,6 +43,10 @@ func init() {
 // @host localhost:8081
 // @BasePath /
 
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// // @Security BearerAuth
 func main() {
 	database := db.DatabaseInitialize()
 	addr := os.Getenv("APP_PORT")

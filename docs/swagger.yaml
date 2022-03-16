@@ -1,4 +1,24 @@
 basePath: /
+definitions:
+  helpers.Response:
+    properties:
+      count: {}
+      data: {}
+      error: {}
+      message: {}
+      statusCode:
+        type: integer
+      total: {}
+    type: object
+  models.Credentials:
+    properties:
+      password:
+        example: dummy
+        type: string
+      username:
+        example: dummy
+        type: string
+    type: object
 host: localhost:8081
 info:
   contact:
@@ -12,5 +32,51 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Swagger Example API
   version: "1.0"
-paths: {}
+paths:
+  /items/:
+    get:
+      description: get items
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Show all data Items
+      tags:
+      - ITEM
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Login first for authorization (Bearer Authorization)
+        Copy token value, then add to field authorization with format
+        Example :
+        Bearer ABCDEFGHIJKLMN.1234567890.XXX
+      parameters:
+      - description: Login
+        in: body
+        name: note
+        required: true
+        schema:
+          $ref: '#/definitions/models.Credentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helpers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.Response'
+      summary: For Login to API
+      tags:
+      - LOGIN
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

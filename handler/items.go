@@ -21,6 +21,16 @@ func NewItemHandler(itemService service.ItemService) ItemHandler {
 	return ItemHandler{itemService: itemService}
 }
 
+// Show All Items
+// @Summary      Show all data Items
+// @Description  get items
+// @Tags         ITEM
+// // @Accept       json
+// @Produce      json
+// // @Param        page   path      int  true  "page"
+// // @Param        limit   path      int  true  "limit"
+// @Router       /items/ [get]
+// @Security BearerAuth
 func (ih *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {
 	startDate := r.URL.Query().Get("start_date")
 	endDate := r.URL.Query().Get("end_date")
