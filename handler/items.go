@@ -29,6 +29,9 @@ func NewItemHandler(itemService service.ItemService) ItemHandler {
 // @Produce json
 // @Param page query int false "page to show"
 // @Param view query int false "limit view items"
+// @Param name query string false "view items by filter name"
+// @Param start_date query string false "view items by filter start date. Format: 02-01-2006 date-month-year"
+// @Param end_date query string false "view items by filter start date. Format: 02-01-2006 date-month-year"
 // @Router /items/ [get]
 // @Security BearerAuth
 func (ih *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {

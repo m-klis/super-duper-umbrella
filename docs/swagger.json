@@ -45,6 +45,24 @@
                         "description": "limit view items",
                         "name": "view",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "view items by filter name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "view items by filter start date. Format: 02-01-2006 date-month-year",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "view items by filter start date. Format: 02-01-2006 date-month-year",
+                        "name": "end_date",
+                        "in": "query"
                     }
                 ],
                 "responses": {}

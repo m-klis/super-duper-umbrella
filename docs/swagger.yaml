@@ -45,6 +45,18 @@ paths:
         in: query
         name: view
         type: integer
+      - description: view items by filter name
+        in: query
+        name: name
+        type: string
+      - description: 'view items by filter start date. Format: 02-01-2006 date-month-year'
+        in: query
+        name: start_date
+        type: string
+      - description: 'view items by filter start date. Format: 02-01-2006 date-month-year'
+        in: query
+        name: end_date
+        type: string
       produces:
       - application/json
       responses: {}
