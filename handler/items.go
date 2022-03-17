@@ -22,14 +22,14 @@ func NewItemHandler(itemService service.ItemService) ItemHandler {
 }
 
 // Show All Items
-// @Summary      Show all data Items
-// @Description  get items
-// @Tags         ITEM
-// // @Accept       json
-// @Produce      json
-// // @Param        page   path      int  true  "page"
-// // @Param        limit   path      int  true  "limit"
-// @Router       /items/ [get]
+// @Summary Show all data Items
+// @Description get items
+// @Tags ITEM
+// // @Accept json
+// @Produce json
+// @Param page query int false "page to show"
+// @Param view query int false "limit view items"
+// @Router /items/ [get]
 // @Security BearerAuth
 func (ih *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {
 	startDate := r.URL.Query().Get("start_date")

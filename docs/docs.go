@@ -40,6 +40,20 @@ const docTemplate = `{
                     "ITEM"
                 ],
                 "summary": "Show all data Items",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "page to show",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "limit view items",
+                        "name": "view",
+                        "in": "query"
+                    }
+                ],
                 "responses": {}
             }
         },

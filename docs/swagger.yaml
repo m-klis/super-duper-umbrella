@@ -36,6 +36,15 @@ paths:
   /items/:
     get:
       description: get items
+      parameters:
+      - description: page to show
+        in: query
+        name: page
+        type: integer
+      - description: limit view items
+        in: query
+        name: view
+        type: integer
       produces:
       - application/json
       responses: {}
