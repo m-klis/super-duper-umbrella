@@ -7,6 +7,7 @@ import (
 	_ "gochicoba/docs"
 	"gochicoba/handler"
 	"gochicoba/handler/middlewares"
+	"gochicoba/helpers"
 	"log"
 	"net/http"
 	"os"
@@ -54,6 +55,8 @@ func main() {
 		Addr:    fmt.Sprintf(":%s", addr),
 		Handler: InitializeRoute(database),
 	}
+
+	go helpers.ScheduleCronUser(func() { helpers.ChangeUser(database) })
 
 	go func() {
 		server.ListenAndServe()

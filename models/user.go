@@ -10,6 +10,7 @@ type User struct {
 	Age       int       `json:"age" validate:"required"`
 	Status    string    `json:"status" validate:"required"`
 	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type UserFilter struct {
