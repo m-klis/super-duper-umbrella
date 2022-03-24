@@ -9,10 +9,13 @@ require (
 	github.com/go-chi/render v1.0.1
 	github.com/go-co-op/gocron v1.13.0
 	github.com/go-playground/validator/v10 v10.10.0
+	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
 	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.4
+	github.com/onsi/ginkgo v1.16.5 // indirect
+	github.com/onsi/gomega v1.18.1 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/http-swagger v1.2.5
 	github.com/swaggo/swag v1.8.0

@@ -27,7 +27,7 @@ func DatabaseInitialize() *gorm.DB {
 	port := os.Getenv("POSTGRES_PORT")
 	dbName := os.Getenv("POSTGRES_DB")
 	username := os.Getenv("POSTGRES_USER")
-	password := os.Getenv("POSTGRES_PASSWORD")
+	password := os.Getenv("POSTGRES_PASS")
 	// Initialize DB
 	db, err := gorm.Open(postgres.Open(
 		fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",

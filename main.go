@@ -50,6 +50,11 @@ func init() {
 // // @Security BearerAuth
 func main() {
 	database := db.DatabaseInitialize()
+	redisDB := db.RedisInitialize()
+
+	ppp, errr := redisDB.Ping().Result()
+	fmt.Println(ppp, errr)
+
 	addr := os.Getenv("APP_PORT")
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", addr),

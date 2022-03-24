@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"fmt"
 	"gochicoba/models"
 	"log"
 	"time"
@@ -23,7 +22,7 @@ func ScheduleCronUser(funcJob func(), params ...interface{}) {
 }
 
 func ChangeUser(db *gorm.DB) {
-	fmt.Println("Change User Runned")
+	// fmt.Println("Change User Runned")
 	var users []models.User
 	err := db.Where("checked = ?", false).
 		Where("(created_at + '10 minutes'::interval) < now()").
@@ -39,5 +38,5 @@ func ChangeUser(db *gorm.DB) {
 			log.Println(err)
 		}
 	}
-	fmt.Println(users)
+	// fmt.Println(users)
 }
