@@ -90,6 +90,7 @@ func (ir *itemRepository) AddItem(itemData *models.Item) (item *models.Item, err
 	if err != nil {
 		return nil, err
 	}
+	// double cek
 	err = query.Where("id = ?", itemData.ID).First(&item).Error
 	if err != nil {
 		return nil, err
@@ -104,7 +105,7 @@ func (ir *itemRepository) UpdateItem(itemId int, itemData *models.Item) (item *m
 	if err != nil {
 		return nil, err
 	}
-
+	// double cek
 	err = query.Where("id = ?", itemId).First(&itemData).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -118,8 +119,9 @@ func (ir *itemRepository) UpdateItem(itemId int, itemData *models.Item) (item *m
 
 func (ir *itemRepository) DeleteItem(itemId int) error {
 	query := ir.db
-
 	var item *models.Item
+
+	// double cek
 	err := query.Where("id = ?", itemId).First(&item).Error
 	if err != nil {
 		return err

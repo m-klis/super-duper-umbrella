@@ -23,13 +23,18 @@ func ScheduleCronUser(funcJob func(), params ...interface{}) {
 }
 
 func ChangeUser(db *gorm.DB) {
+	fmt.Println("Change User Runned")
 	var users []models.User
-	err := db.Where("now() > created_at + '10 minutes'::interval").Find(&users).Error
+	err := db.Where("checked = ?", false).
+		Where("(created_at + '10 minutes'::interval) < now()").
+		Find(&users).Error
 	if err != nil {
 		log.Println(err)
 	}
 	for i := range users {
-		err := db.Model(&users[i]).Update("name", users[i].Name+" OK").Error
+		err := db.Model(&users[i]).
+			Updates(map[string]interface{}{"name": users[i].Name + " OK", "checked": true}).
+			Error
 		if err != nil {
 			log.Println(err)
 		}
