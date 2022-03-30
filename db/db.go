@@ -41,6 +41,10 @@ func DatabaseInitialize() *gorm.DB {
 	}
 	log.Printf("[INIT] Successfully connected to PostgreSQL Database\n")
 	sqlDb, err := db.DB()
+	if err != nil {
+		log.Fatalf("[INIT] Failed connecting to PostgreSQL Database at %s:%s. %+v\n",
+			host, port, err)
+	}
 	sqlDb.SetMaxOpenConns(100)
 	dB = db
 	return dB

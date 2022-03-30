@@ -58,6 +58,14 @@ type Transaction struct {
 	ItemQty   int       `json:"item_qty"`
 }
 
+type ResponseTransactionBroker struct {
+	UserId    int       `json:"user_id"`
+	Amount    float64   `json:"amount"`
+	CreatedAt time.Time `json:"created_at"`
+	Uuid      string    `json:"uuid"`
+	ItemQty   int       `json:"item_qty"`
+}
+
 type ResponseTransaction struct {
 	StatusCode int         `json:"statusCode"`
 	Message    string      `json:"message"`

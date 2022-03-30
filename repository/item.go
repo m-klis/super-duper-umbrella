@@ -1,9 +1,14 @@
 package repository
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"gochicoba/models"
+	"strconv"
+	"time"
 
+	"github.com/go-redis/redis"
 	"gorm.io/gorm"
 )
 
@@ -18,26 +23,30 @@ type ItemRepository interface {
 }
 
 type itemRepository struct {
-	db *gorm.DB
+	db    *gorm.DB
+	redis *redis.Client
 }
 
-func NewItemRepository(db *gorm.DB) ItemRepository {
+func NewItemRepository(db *gorm.DB, redis *redis.Client) ItemRepository {
 	return &itemRepository{
-		db: db,
+		db:    db,
+		redis: redis,
 	}
 }
 
 func (ir *itemRepository) GetAllItems(startEnd models.ItemFilter) ([]*models.Item, error) {
 	var list []*models.Item
-	query := ir.db.Debug()
-	// query := ir.db
+	query := ir.db
+	var check string = "data"
 
 	if startEnd.StartDate != nil && startEnd.EndDate != nil {
 		query = query.Where("created_at BETWEEN ? AND ?", startEnd.StartDate, startEnd.EndDate)
+		check = check + startEnd.StartDate.String() + startEnd.EndDate.String()
 	}
 
 	if startEnd.Name != "" {
 		query = query.Where("name LIKE ?", "%"+startEnd.Name+"%")
+		check = check + startEnd.Name
 	}
 
 	if startEnd.Page == 0 {
@@ -52,9 +61,39 @@ func (ir *itemRepository) GetAllItems(startEnd models.ItemFilter) ([]*models.Ite
 
 	offset := (startEnd.Page - 1) * startEnd.View
 
-	err := query.Order("ID ASC").Offset(offset).Limit(startEnd.View).Find(&list).Error
+	check = check + strconv.Itoa(offset)
+
+	str, err := ir.redis.Get(check).Result()
+	// fmt.Println(err)
+
 	if err != nil {
-		return nil, err
+		err = query.Order("ID ASC").Offset(offset).Limit(startEnd.View).Find(&list).Error
+		if err != nil {
+			return nil, err
+		}
+
+		var byteList []byte
+		byteList, err = json.Marshal(list)
+		if err != nil {
+			return nil, err
+		}
+
+		ir.redis.Set(check, string(byteList), 10*time.Minute)
+		fmt.Println("set redis")
+	} else {
+		resByte := []byte(str)
+		// fmt.Println("ResByte :", resByte)
+		// fmt.Println("String Redis :", str)
+		var data []models.Item
+		err = json.Unmarshal(resByte, &data)
+		if err != nil {
+			return nil, err
+		}
+		// fmt.Println("Data :", data)
+		for i := range data {
+			list = append(list, &data[i])
+		}
+		fmt.Println("get redis")
 	}
 
 	return list, nil

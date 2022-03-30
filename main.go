@@ -8,6 +8,7 @@ import (
 	"gochicoba/handler"
 	"gochicoba/handler/middlewares"
 	"gochicoba/helpers"
+	"gochicoba/producer"
 	"log"
 	"net/http"
 	"os"
@@ -17,6 +18,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-redis/redis"
 	"github.com/joho/godotenv"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"gorm.io/gorm"
@@ -41,7 +43,7 @@ func init() {
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:8081
+// @host localhost:8080
 // @BasePath /
 
 // @securityDefinitions.apikey BearerAuth
@@ -51,14 +53,12 @@ func init() {
 func main() {
 	database := db.DatabaseInitialize()
 	redisDB := db.RedisInitialize()
-
-	ppp, errr := redisDB.Ping().Result()
-	fmt.Println(ppp, errr)
+	rabbitMQ := producer.InitializeMessageBroker()
 
 	addr := os.Getenv("APP_PORT")
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", addr),
-		Handler: InitializeRoute(database),
+		Handler: InitializeRoute(database, redisDB, rabbitMQ),
 	}
 
 	go helpers.ScheduleCronUser(func() { helpers.ChangeUser(database) })
@@ -67,7 +67,7 @@ func main() {
 		server.ListenAndServe()
 	}()
 
-	defer Stop(server)
+	defer Stop(server, redisDB, rabbitMQ)
 	log.Printf("Started server on : %s", addr)
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
@@ -75,7 +75,7 @@ func main() {
 	log.Println("Stopping API Server")
 }
 
-func InitializeRoute(db *gorm.DB) http.Handler {
+func InitializeRoute(db *gorm.DB, redis *redis.Client, mb *producer.MessageBroker) http.Handler {
 	addr := os.Getenv("APP_PORT")
 
 	router := chi.NewRouter()
@@ -83,7 +83,7 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 	router.MethodNotAllowed(handler.MethodNotAllowedHandler)
 	router.NotFound(handler.NotFoundHandler)
 
-	ih := ItemHandler(db)
+	ih := ItemHandler(db, redis)
 
 	router.Route("/items", func(router chi.Router) {
 		router.Use(middlewares.CheckToken)
@@ -110,7 +110,7 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 		})
 	})
 
-	ub := BuyHandler(db)
+	ub := BuyHandler(db, redis, mb)
 
 	router.Route("/buys", func(router chi.Router) {
 		router.Use(middlewares.CheckToken)
@@ -118,6 +118,9 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 		router.Post("/", ub.CreateBuy)
 		router.Route("/transaction", func(router chi.Router) {
 			router.Post("/", ub.CreateTransaction)
+		})
+		router.Route("/transactionbroker", func(router chi.Router) {
+			router.Post("/", ub.CreateTransactionBroker)
 		})
 	})
 
@@ -134,7 +137,10 @@ func InitializeRoute(db *gorm.DB) http.Handler {
 	return router
 }
 
-func Stop(server *http.Server) {
+func Stop(server *http.Server, redis *redis.Client, mb *producer.MessageBroker) {
+	redis.FlushAll()
+	redis.Close()
+	mb.CloseMessageBroker()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {

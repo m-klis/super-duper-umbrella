@@ -23,8 +23,7 @@ func NewLoginRepository(db *gorm.DB) LoginRepository {
 
 func (lr *loginRepository) CheckLogin(mc models.Credentials) error {
 	var dataLogin models.Login
-
-	query := lr.db.Debug()
+	query := lr.db
 	err := query.Where("username = ?", mc.Username).First(&dataLogin).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

@@ -9,6 +9,7 @@ type BuyService interface {
 	GetAllBuys() ([]*models.Buy, error)
 	CreateBuy(models.Buy, []models.BuyDetail) (*models.Buy, error)
 	CreateTransaction(float64, *models.RequestTransaction) (*models.Transaction, error)
+	CreateTransactionBroker(float64, *models.RequestTransaction) (*models.ResponseTransactionBroker, error)
 }
 
 type buyService struct {
@@ -39,6 +40,15 @@ func (bs *buyService) CreateBuy(db models.Buy, di []models.BuyDetail) (*models.B
 
 func (bs *buyService) CreateTransaction(amount float64, rt *models.RequestTransaction) (*models.Transaction, error) {
 	res, err := bs.buyRepo.CreateTransaction(amount, rt)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// CreateTransactionBroker implements BuyService
+func (bs *buyService) CreateTransactionBroker(amount float64, rt *models.RequestTransaction) (*models.ResponseTransactionBroker, error) {
+	res, err := bs.buyRepo.CreateTransactionBroker(amount, rt)
 	if err != nil {
 		return nil, err
 	}

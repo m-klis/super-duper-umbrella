@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"gochicoba/helpers"
 	"gochicoba/models"
 	"gochicoba/service"
@@ -107,6 +108,46 @@ func (bh *BuyHandler) CreateTransaction(w http.ResponseWriter, r *http.Request) 
 	amount := item.Price * float64(req.ItemQty)
 
 	res, err = bh.buyService.CreateTransaction(amount, req)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+		return
+	}
+	helpers.CustomResponse(w, r, http.StatusOK, "success", res)
+}
+
+func (bh *BuyHandler) CreateTransactionBroker(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("OKE")
+
+	var req *models.RequestTransaction
+	var res *models.ResponseTransactionBroker
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+		return
+	}
+	user, err := bh.userService.GetUser(req.UserId)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+		return
+	}
+	if user == nil {
+		helpers.ErrorResponse(w, r, http.StatusNotFound, "user not found", "")
+		return
+	}
+
+	item, err := bh.itemService.GetItem(req.ItemId)
+	if err != nil {
+		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
+		return
+	}
+	if item == nil {
+		helpers.ErrorResponse(w, r, http.StatusNotFound, "item not found", "")
+		return
+	}
+
+	amount := item.Price * float64(req.ItemQty)
+
+	res, err = bh.buyService.CreateTransactionBroker(amount, req)
 	if err != nil {
 		helpers.ErrorResponse(w, r, http.StatusInternalServerError, "failed", err.Error())
 		return

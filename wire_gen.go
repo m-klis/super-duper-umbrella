@@ -7,16 +7,22 @@
 package main
 
 import (
+	"github.com/go-redis/redis"
 	"gochicoba/handler"
+	"gochicoba/producer"
 	"gochicoba/repository"
 	"gochicoba/service"
 	"gorm.io/gorm"
 )
 
+import (
+	_ "gochicoba/docs"
+)
+
 // Injectors from wire.go:
 
-func ItemHandler(db *gorm.DB) handler.ItemHandler {
-	itemRepository := repository.NewItemRepository(db)
+func ItemHandler(db *gorm.DB, redis2 *redis.Client) handler.ItemHandler {
+	itemRepository := repository.NewItemRepository(db, redis2)
 	itemService := service.NewItemService(itemRepository)
 	itemHandler := handler.NewItemHandler(itemService)
 	return itemHandler
@@ -29,10 +35,10 @@ func UserHandler(db *gorm.DB) handler.UserHandler {
 	return userHandler
 }
 
-func BuyHandler(db *gorm.DB) handler.BuyHandler {
-	buyRepository := repository.NewBuyRepository(db)
+func BuyHandler(db *gorm.DB, redis2 *redis.Client, mb *producer.MessageBroker) handler.BuyHandler {
+	buyRepository := repository.NewBuyRepository(db, mb)
 	buyService := service.NewBuyService(buyRepository)
-	itemRepository := repository.NewItemRepository(db)
+	itemRepository := repository.NewItemRepository(db, redis2)
 	itemService := service.NewItemService(itemRepository)
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)

@@ -51,7 +51,7 @@ func (lh *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(30 * time.Minute)
 	claims := &models.Claims{
 		Username: creds.Username,
 		StandardClaims: jwt.StandardClaims{

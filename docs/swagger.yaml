@@ -19,7 +19,7 @@ definitions:
         example: dummy
         type: string
     type: object
-host: localhost:8081
+host: localhost:8080
 info:
   contact:
     email: support@swagger.io

@@ -16,6 +16,7 @@ require (
 	github.com/lib/pq v1.10.4
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.18.1 // indirect
+	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/http-swagger v1.2.5
 	github.com/swaggo/swag v1.8.0
